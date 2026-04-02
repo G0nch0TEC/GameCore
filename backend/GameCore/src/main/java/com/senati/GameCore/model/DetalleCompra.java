@@ -15,11 +15,11 @@ public class DetalleCompra {
 
     @ManyToOne
     @JoinColumn(name="id_compra", nullable = false)
-    private Compras  idCompra;
+    private Compras  compra;
 
     @ManyToOne
     @JoinColumn(name="id_producto", nullable = false)
-    private Productos idProducto;
+    private Productos producto;
 
     @Column(name="cantidad", nullable = false)
     private Integer cantidad;
@@ -30,11 +30,11 @@ public class DetalleCompra {
     public Integer getIdDetalle() {return idDetalle;}
     public void setIdDetalle(Integer idDetalle) {this.idDetalle = idDetalle;}
 
-    public Compras getIdCompra() {return idCompra;}
-    public void setIdCompra(Compras idCompra) {this.idCompra = idCompra;}
+    public Compras getCompra() {return compra;}
+    public void setCompra(Compras compra) {this.compra = compra;}
 
-    public Productos getIdProducto() {return idProducto;}
-    public void setIdProducto(Productos idProducto) {this.idProducto = idProducto;}
+    public Productos getProducto() {return producto;}
+    public void setProducto(Productos producto) {this.producto = producto;}
 
     public Integer getCantidad() {return cantidad;}
     public void setCantidad(Integer cantidad) {this.cantidad = cantidad;}

@@ -19,8 +19,12 @@ public class Categoria {
     private String descripcion;
 
     @Column(name="fecha_creacion", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime fechaCreacion = LocalDateTime.now();
+
+    @PrePersist
+    protected void prePersist() {
+        this.fechaCreacion = LocalDateTime.now();
+    }
 
     public Integer getIdCategoria() {return idCategoria;}
     public void setIdCategoria(Integer idCategoria) {this.idCategoria = idCategoria;}

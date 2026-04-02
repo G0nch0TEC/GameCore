@@ -36,14 +36,27 @@ public class Productos {
     @Column(name="img_url", columnDefinition = "TEXT")
     private String imgUrl;
 
-    @Column(name="estado", columnDefinition = "VARCHAR(20) DEFAULT 'activo'")
-    private String estado;
+    public enum Estado { activo, inactivo, agotado}
+    @Enumerated(EnumType.STRING)
+    @Column(name="estado", nullable = true)
+    private Estado estado = Estado.activo;
 
     @Column(name="fecha_creacion", updatable = false)
-    private LocalDateTime fechaCreacion =  LocalDateTime.now();
+    private LocalDateTime fechaCreacion;
 
     @Column(name="fecha_actualizacion")
     private LocalDateTime fechaActualizacion =  LocalDateTime.now();
+
+    @PrePersist
+    protected void onCreate() {
+        this.fechaCreacion = LocalDateTime.now();
+        this.fechaActualizacion = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.fechaActualizacion = LocalDateTime.now();
+    }
 
     public Integer getIdProducto() {return idProducto;}
     public void setIdProducto(Integer idProducto) {this.idProducto = idProducto;}
@@ -69,8 +82,8 @@ public class Productos {
     public String getImgUrl() {return imgUrl;}
     public void setImgUrl(String imgUrl) {this.imgUrl = imgUrl;}
 
-    public String getEstado() {return estado;}
-    public void setEstado(String estado) {this.estado = estado;}
+    public Estado getEstado() {return estado;}
+    public void setEstado(Estado estado) {this.estado = estado;}
 
     public LocalDateTime getFechaCreacion() {return fechaCreacion;}
     public void setFechaCreacion(LocalDateTime fechaCreacion) {this.fechaCreacion = fechaCreacion;}

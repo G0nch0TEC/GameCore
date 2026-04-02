@@ -26,7 +26,12 @@ public class CarritoDetalle {
     private Integer cantidad;
 
     @Column(name="fecha_agregado", updatable = false)
-    private LocalDateTime fechaAgregado = LocalDateTime.now();
+    private LocalDateTime fechaAgregado;
+
+    @PrePersist
+    protected void onCreate() {
+        this.fechaAgregado = LocalDateTime.now();
+    }
 
     public Integer getIdDetalle() {return idDetalle;}
     public void setIdDetalle(Integer idDetalle) {this.idDetalle = idDetalle;}

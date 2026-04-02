@@ -18,10 +18,17 @@ public class Compras {
     private Usuarios usuario;
 
     @Column(name="fecha_compra", updatable = false)
-    private LocalDateTime fechaCompra =  LocalDateTime.now();
+    private LocalDateTime fechaCompra;
 
-    @Column(name="estado", nullable = false, length = 20)
-    private String estado;
+    @PrePersist
+    protected void onCreate() {
+        this.fechaCompra = LocalDateTime.now();
+    }
+
+    public enum Estado { Pendiente, Pagado, cancelado }
+    @Enumerated(EnumType.STRING)
+    @Column(name="estado", nullable = false)
+    private Estado estado;
 
     @Column(name="total", nullable = false, precision = 10, scale = 2)
     private BigDecimal total;

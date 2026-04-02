@@ -13,7 +13,7 @@ public class Carritos {
     private Integer idCarrito;
 
     @OneToOne
-    @JoinColumn(name="usuario", nullable = false, unique = true)
+    @JoinColumn(name="id_usuario", nullable = false, unique = true)
     private Usuarios usuario;
 
     public Integer getIdCarrito() {return idCarrito;}
