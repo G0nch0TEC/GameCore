@@ -13,7 +13,7 @@ public class Compras {
     @Column(name = "id_compra")
     private Integer idCompra;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="id_usuario", nullable = false)
     private Usuarios usuario;
 
@@ -42,8 +42,8 @@ public class Compras {
     public LocalDateTime getFechaCompra() {return fechaCompra;}
     public void setFechaCompra(LocalDateTime fechaCompra) {this.fechaCompra = fechaCompra;}
 
-    public String getEstado() {return estado;}
-    public void setEstado(String estado) {this.estado = estado;}
+    public Estado getEstado() {return estado;}
+    public void setEstado(Estado estado) {this.estado = estado;}
 
     public BigDecimal getTotal() {return total;}
     public void setTotal(BigDecimal total) {this.total = total;}

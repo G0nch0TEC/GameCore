@@ -2,6 +2,7 @@ package com.senati.GameCore.model;
 
 import jakarta.persistence.*;
 
+import java.awt.desktop.FilesEvent;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,11 +15,11 @@ public class CarritoDetalle {
     @Column(name="id_detalle")
     private Integer idDetalle;
 
-    @ManyToOne
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name="id_carrito", nullable = false)
     private Carritos carrito;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_producto", nullable = false)
     private Productos producto;
 

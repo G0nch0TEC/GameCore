@@ -12,7 +12,7 @@ public class Carritos {
     @Column(name="id_carrito")
     private Integer idCarrito;
 
-    @OneToOne
+    @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="id_usuario", nullable = false, unique = true)
     private Usuarios usuario;
 
