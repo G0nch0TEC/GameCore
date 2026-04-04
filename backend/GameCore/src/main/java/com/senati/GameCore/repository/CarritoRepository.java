@@ -1,7 +1,7 @@
 package com.senati.GameCore.repository;
 
 
-import com.senati.GameCore.model.Carritos;
+import com.senati.GameCore.model.Carrito;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -9,23 +9,23 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public class CarritosRepository {
+public class CarritoRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    public Optional<Carritos> findByIdUsuario(Integer idUsuario) {
-        return entityManager.createQuery("SELECT c FROM Carritos c WHERE c.usuario.idUsuario = :idUsuario", Carritos.class)
+    public Optional<Carrito> findByIdUsuario(Integer idUsuario) {
+        return entityManager.createQuery("SELECT c FROM Carrito c WHERE c.usuario.idUsuario = :idUsuario", Carrito.class)
                 .setParameter("idUsuario", idUsuario)
                 .getResultStream()
                 .findFirst();
     }
 
-    public Optional<Carritos> findByIdCarrito(Integer idCarrito) {
-        return Optional.ofNullable(entityManager.find(Carritos.class, idCarrito));
+    public Optional<Carrito> findByIdCarrito(Integer idCarrito) {
+        return Optional.ofNullable(entityManager.find(Carrito.class, idCarrito));
     }
 
-    public Carritos save(Carritos carrito) {
+    public Carrito save(Carrito carrito) {
         if (carrito.getIdCarrito() == null) {
             entityManager.persist(carrito);
             return carrito;
@@ -35,7 +35,7 @@ public class CarritosRepository {
     }
 
     public void  delete(Integer idCarrito) {
-        Carritos c = entityManager.find(Carritos.class, idCarrito);
+        Carrito c = entityManager.find(Carrito.class, idCarrito);
         if (c != null) {
             entityManager.remove(c);
         }

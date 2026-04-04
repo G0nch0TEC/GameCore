@@ -49,9 +49,10 @@ public class DetalleCompraRepository {
     }
 
     public BigDecimal calcularTotal(Integer idCompra) {
-        return entityManager.createQuery("SELECT SUM(d.cantidad * d.precioUnitario) FROM DetalleCompra d WHERE d.compra.idCompra = :idCompra", BigDecimal.class)
+        BigDecimal result = entityManager.createQuery("SELECT SUM(d.cantidad * d.precioUnitario) FROM DetalleCompra d WHERE d.compra.idCompra = :idCompra", BigDecimal.class)
                 .setParameter("idCompra", idCompra)
                 .getSingleResult();
+        return result != null ? result : BigDecimal.ZERO;
     }
 
     public Long countItems(Integer idCompra) {

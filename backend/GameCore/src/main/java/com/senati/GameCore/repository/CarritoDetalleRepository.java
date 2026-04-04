@@ -46,7 +46,7 @@ public class CarritoDetalleRepository {
     }
 
     public void clearByIdCarrito(Integer idCarrito) {
-        entityManager.createQuery("DELETE FROM CarritoDetalle d WHERE d.carrito.idCarrito = :idCarrito", CarritoDetalle.class)
+        entityManager.createQuery("DELETE FROM CarritoDetalle d WHERE d.carrito.idCarrito = :idCarrito")
                 .setParameter("idCarrito", idCarrito)
                 .executeUpdate();
     }
@@ -59,9 +59,10 @@ public class CarritoDetalleRepository {
     }
 
     public Double calcularTotal(Integer idCarrito) {
-        return entityManager.createQuery("SELECT SUM(d.cantidad * d.producto.precio)" + "FROM CarritoDetalle d WHERE d.carrito.idCarrito = :idCarrito", Double.class)
+        Double result = entityManager.createQuery("SELECT SUM(d.cantidad * d.producto.precio)" + "FROM CarritoDetalle d WHERE d.carrito.idCarrito = :idCarrito", Double.class)
                 .setParameter("idCarrito", idCarrito)
                 .getSingleResult();
+        return result != null ? result : 0.0;
     }
 
     public Long countItems(Integer idCarrito) {

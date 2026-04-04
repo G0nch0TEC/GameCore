@@ -1,12 +1,12 @@
 package com.senati.GameCore.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name="usuarios")
-public class Usuarios {
+public class Usuario {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="id_usuario")
@@ -22,7 +22,7 @@ public class Usuarios {
     private String contrasena;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "rol", nullable = false)
+    @Column(name = "rol", columnDefinition = "ENUM('admin', 'cliente')")
     private Rol rol = Rol.cliente;
 
     @Column(name="fecha_registro", updatable = false)
@@ -33,9 +33,23 @@ public class Usuarios {
         this.fechaRegistro = LocalDateTime.now();
     }
 
+    @OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private Carrito carrito;
+
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private List<Producto> productos;
+
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private List<Compra> compras;
+
     public enum Rol { admin, cliente }
 
     // obtener y insertar
+
+    public Carrito getCarrito() { return carrito; }
+    public List<Producto> getProductos() { return productos; }
+    public List<Compra> getCompras() { return compras; }
+
     public Integer getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Integer idUsuario) { this.idUsuario = idUsuario; }
 
@@ -52,6 +66,5 @@ public class Usuarios {
     public void setRol(Rol rol) { this.rol = rol; }
 
     public LocalDateTime getFechaRegistro() { return fechaRegistro; }
-    public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
 }
 

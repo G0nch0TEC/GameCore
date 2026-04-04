@@ -1,8 +1,8 @@
 package com.senati.GameCore.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 
-import java.awt.desktop.FilesEvent;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,12 +17,13 @@ public class CarritoDetalle {
 
     @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name="id_carrito", nullable = false)
-    private Carritos carrito;
+    private Carrito carrito;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_producto", nullable = false)
-    private Productos producto;
+    private Producto producto;
 
+    @Min(value = 1, message = "La cantidad debe ser mayor a 0")
     @Column(name="cantidad", nullable = false)
     private Integer cantidad;
 
@@ -34,18 +35,19 @@ public class CarritoDetalle {
         this.fechaAgregado = LocalDateTime.now();
     }
 
+    //getter and setter
+
     public Integer getIdDetalle() {return idDetalle;}
     public void setIdDetalle(Integer idDetalle) {this.idDetalle = idDetalle;}
 
-    public Carritos getCarrito() {return carrito;}
-    public void setCarrito(Carritos carrito) {this.carrito = carrito;}
+    public Carrito getCarrito() {return carrito;}
+    public void setCarrito(Carrito carrito) {this.carrito = carrito;}
 
-    public Productos getProducto() {return producto;}
-    public void setProducto(Productos producto) {this.producto = producto;}
+    public Producto getProducto() {return producto;}
+    public void setProducto(Producto producto) {this.producto = producto;}
 
     public Integer getCantidad() {return cantidad;}
     public void setCantidad(Integer cantidad) {this.cantidad = cantidad;}
 
     public LocalDateTime getFechaAgregado() {return fechaAgregado;}
-    public void setFechaAgregado(LocalDateTime fechaAgregado) {this.fechaAgregado = fechaAgregado;}
 }

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "productos")
-public class Productos {
+public class Producto {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="id_producto")
@@ -18,8 +18,8 @@ public class Productos {
     private Categoria categoria;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_usuario", nullable = true)
-    private Usuarios usuario;
+    @JoinColumn(name="id_usuario")
+    private Usuario usuario;
 
     @Column(name="nombre_producto", nullable = false)
     private String nombreProducto;
@@ -38,14 +38,14 @@ public class Productos {
 
     public enum Estado { activo, inactivo, agotado}
     @Enumerated(EnumType.STRING)
-    @Column(name="estado", nullable = true)
+    @Column(name="estado", columnDefinition = "ENUM('activo', 'inactivo', 'agotado')")
     private Estado estado = Estado.activo;
 
     @Column(name="fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion;
 
     @Column(name="fecha_actualizacion")
-    private LocalDateTime fechaActualizacion =  LocalDateTime.now();
+    private LocalDateTime fechaActualizacion;
 
     @PrePersist
     protected void onCreate() {
@@ -64,8 +64,8 @@ public class Productos {
     public Categoria getCategoria() {return categoria;}
     public void setCategoria(Categoria categoria) {this.categoria = categoria;}
 
-    public Usuarios getUsuario() {return usuario;}
-    public void setUsuario(Usuarios usuario) {this.usuario = usuario;}
+    public Usuario getUsuario() {return usuario;}
+    public void setUsuario(Usuario usuario) {this.usuario = usuario;}
 
     public String getNombreProducto() {return nombreProducto;}
     public void setNombreProducto(String nombreProducto) {this.nombreProducto = nombreProducto;}
@@ -86,8 +86,6 @@ public class Productos {
     public void setEstado(Estado estado) {this.estado = estado;}
 
     public LocalDateTime getFechaCreacion() {return fechaCreacion;}
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {this.fechaCreacion = fechaCreacion;}
 
     public LocalDateTime getFechaActualizacion() {return fechaActualizacion;}
-    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {this.fechaActualizacion = fechaActualizacion;}
 }

@@ -1,21 +1,25 @@
 package com.senati.GameCore.model;
 
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name="compras")
-public class Compras {
+public class Compra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_compra")
     private Integer idCompra;
 
+    @OneToMany(mappedBy = "compra", fetch = FetchType.LAZY)
+    private List<DetalleCompra> detalles;
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="id_usuario", nullable = false)
-    private Usuarios usuario;
+    private Usuario usuario;
 
     @Column(name="fecha_compra", updatable = false)
     private LocalDateTime fechaCompra;
@@ -25,22 +29,26 @@ public class Compras {
         this.fechaCompra = LocalDateTime.now();
     }
 
-    public enum Estado { Pendiente, Pagado, cancelado }
+    public enum Estado { pendiente, pagado, cancelado }
     @Enumerated(EnumType.STRING)
-    @Column(name="estado", nullable = false)
+    @Column(name="estado", columnDefinition = "ENUM('pendiente', 'pagado', 'cancelado')", nullable = false)
     private Estado estado;
 
+    @DecimalMin(value = "0.0", message = "El total no puede ser negativo")
     @Column(name="total", nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
+
+    //getter and setter
+
+    public List<DetalleCompra> getDetalles() { return detalles; }
 
     public Integer getIdCompra() {return idCompra;}
     public void setIdCompra(Integer idCompra) {this.idCompra = idCompra;}
 
-    public Usuarios getUsuario() {return usuario;}
-    public void setUsuario(Usuarios usuario) {this.usuario = usuario;}
+    public Usuario getUsuario() {return usuario;}
+    public void setUsuario(Usuario usuario) {this.usuario = usuario;}
 
     public LocalDateTime getFechaCompra() {return fechaCompra;}
-    public void setFechaCompra(LocalDateTime fechaCompra) {this.fechaCompra = fechaCompra;}
 
     public Estado getEstado() {return estado;}
     public void setEstado(Estado estado) {this.estado = estado;}

@@ -3,6 +3,7 @@ package com.senati.GameCore.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name="categoria")
@@ -12,6 +13,9 @@ public class Categoria {
     @Column(name="id_categoria")
     private Integer idCategoria;
 
+    @OneToMany(mappedBy = "categoria", fetch = FetchType.LAZY)
+    private List<Producto> productos;
+
     @Column(name="nombre", length = 100, nullable = false, unique = true)
     private String nombre;
 
@@ -19,12 +23,16 @@ public class Categoria {
     private String descripcion;
 
     @Column(name="fecha_creacion", updatable = false)
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
+    private LocalDateTime fechaCreacion;
 
     @PrePersist
     protected void prePersist() {
         this.fechaCreacion = LocalDateTime.now();
     }
+
+    //Mete y saca
+
+    public List<Producto> getProductos() { return productos; }
 
     public Integer getIdCategoria() {return idCategoria;}
     public void setIdCategoria(Integer idCategoria) {this.idCategoria = idCategoria;}
@@ -36,5 +44,4 @@ public class Categoria {
     public void setDescripcion(String descripcion) {this.descripcion = descripcion;}
 
     public LocalDateTime getFechaCreacion() {return fechaCreacion;}
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {this.fechaCreacion = fechaCreacion;}
 }
