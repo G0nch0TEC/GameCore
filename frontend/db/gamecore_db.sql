@@ -11,7 +11,7 @@ CREATE TABLE usuarios(
     fecha_registro timestamp default current_timestamp
 );
 
--- tabla categoria
+-- TABLA CATEGORIA
 create table categoria(
 	id_categoria int primary key auto_increment,
     nombre varchar(100) not null unique,
@@ -19,7 +19,7 @@ create table categoria(
     fecha_creacion timestamp default current_timestamp
 );
 
--- tabla productos
+-- TABLA PRODUCTOS
 create table productos(
 	id_producto int primary key auto_increment,
     id_categoria int not null,
@@ -29,21 +29,21 @@ create table productos(
     precio decimal(10,2) not null check (precio > 0),
     stock int not null check(stock >= 0),
     img_url text,
-    estado varchar(20) default 'activo' check (estado in('activo', 'inactivo', 'agotado')),
+    estado ENUM('activo', 'inactivo', 'agotado') DEFAULT 'activo',
     fecha_creacion timestamp default current_timestamp,
     fecha_actualizacion timestamp default current_timestamp on update current_timestamp,
     foreign key (id_categoria) references categoria(id_categoria) on delete restrict on update cascade,
     foreign key (id_usuario) references usuarios(id_usuario) on delete set null on update cascade
 );
 
--- tabla carritos
+-- TABLA CARRITOS
 create table carritos(
 	id_carrito int primary key auto_increment,
     id_usuario int not null unique,
     foreign key (id_usuario) references usuarios(id_usuario) on delete cascade on update cascade
 );
 
--- tabla carrito_detalle
+-- TABLA CARRITO DETALLE
 
 create table carrito_detalle(
 	id_detalle int primary key auto_increment,
@@ -56,12 +56,12 @@ create table carrito_detalle(
     foreign key (id_producto) references productos(id_producto) on delete cascade on update cascade
 );
 
--- tabla compras
+-- TABLA COMPRAS
 create table compras (
     id_compra INT PRIMARY KEY AUTO_INCREMENT,
     id_usuario INT not null,
     fecha_compra TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    estado VARCHAR(20) NOT NULL CHECK (estado IN ('pendiente', 'pagado', 'cancelado')),
+    estado ENUM('pendiente', 'pagado', 'cancelado') NOT NULL,
     total DECIMAL(10,2) NOT NULL CHECK (total >= 0),
     foreign key (id_usuario) references usuarios(id_usuario) on delete restrict on update cascade
 );
