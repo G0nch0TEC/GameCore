@@ -73,3 +73,158 @@ El sistema cuenta con 7 tablas principales:
 
 ### Modelo Relacional (MR)
 ![Modelo Relacional](resource/Modelo%20relacional.drawio.png)
+
+### Cardinalidades
+
+USUARIOS — CARRITOS (1:1)
+Un usuario solo puede tener un carrito, y cada carrito pertenece exclusivamente a un usuario.
+
+USUARIOS — PRODUCTOS (1:N)
+Un usuario puede registrar o gestionar varios productos, pero cada producto pertenece a un único usuario.
+
+USUARIOS — COMPRAS (1:N)
+Un usuario puede realizar múltiples compras, pero cada compra está asociada a un solo usuario.
+
+CATEGORIA — PRODUCTOS (1:N)
+Una categoría puede agrupar varios productos, pero cada producto pertenece a una sola categoría.
+
+CARRITOS — CARRITO_DETALLE (1:N)
+Un carrito puede contener varios registros de detalle (productos agregados), pero cada detalle pertenece a un único carrito.
+
+PRODUCTOS — DETALLE_COMPRA (1:N)
+Un producto puede aparecer en múltiples detalles de compra, pero cada detalle de compra hace referencia a un solo producto.
+
+PRODUCTOS — CARRITO_DETALLE (1:N)
+Un producto puede estar en varios carritos (a través de sus detalles), pero cada registro de carrito_detalle corresponde a un solo producto.
+
+COMPRAS — DETALLE_COMPRA (1:N)
+Una compra puede incluir varios productos (detalles), pero cada detalle de compra pertenece a una sola compra.
+
+### Base de datos (sql)
+
+```sql
+-- TABLA USUARIOS
+CREATE TABLE usuarios(
+	id_usuario int primary key auto_increment,
+    nombre varchar(100) not null,
+    correo varchar(150) not null unique,
+    contrasena varchar(255) not null,
+    rol enum('admin', 'cliente') default 'cliente',
+    fecha_registro timestamp default current_timestamp
+);
+
+-- TABLA CATEGORIA
+create table categoria(
+	id_categoria int primary key auto_increment,
+    nombre varchar(100) not null unique,
+    descripcion text,
+    fecha_creacion timestamp default current_timestamp
+);
+
+-- TABLA PRODUCTOS
+create table productos(
+	id_producto int primary key auto_increment,
+    id_categoria int not null,
+    id_usuario int,
+    nombre_producto varchar(150) not null,
+    descripcion text,
+    precio decimal(10,2) not null check (precio > 0),
+    stock int not null check(stock >= 0),
+    img_url text,
+    estado ENUM('activo', 'inactivo', 'agotado') DEFAULT 'activo',
+    fecha_creacion timestamp default current_timestamp,
+    fecha_actualizacion timestamp default current_timestamp on update current_timestamp,
+    foreign key (id_categoria) references categoria(id_categoria) on delete restrict on update cascade,
+    foreign key (id_usuario) references usuarios(id_usuario) on delete set null on update cascade
+);
+
+-- TABLA CARRITOS
+create table carritos(
+	id_carrito int primary key auto_increment,
+    id_usuario int not null unique,
+    foreign key (id_usuario) references usuarios(id_usuario) on delete cascade on update cascade
+);
+
+-- TABLA CARRITO DETALLE
+
+create table carrito_detalle(
+	id_detalle int primary key auto_increment,
+    id_carrito int not null,
+    id_producto int not null,
+    cantidad int not null check (cantidad > 0),
+    fecha_agregado timestamp default current_timestamp,
+    unique (id_carrito, id_producto),
+    foreign key (id_carrito) references carritos(id_carrito) on delete cascade on update cascade,
+    foreign key (id_producto) references productos(id_producto) on delete cascade on update cascade
+);
+
+-- TABLA COMPRAS
+create table compras (
+    id_compra INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT not null,
+    fecha_compra TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('pendiente', 'pagado', 'cancelado') NOT NULL,
+    total DECIMAL(10,2) NOT NULL CHECK (total >= 0),
+    foreign key (id_usuario) references usuarios(id_usuario) on delete restrict on update cascade
+);
+
+-- TABLA: DETALLE_COMPRA
+create table detalle_compra (
+    id_detalle int primary key auto_increment,
+    id_compra int not null,
+    id_producto int not null,
+    cantidad int not null check (cantidad > 0),
+    precio_unitario decimal(10,2) not null check (precio_unitario > 0),
+    unique (id_compra, id_producto),
+    foreign key (id_compra) references compras(id_compra) on delete cascade on update cascade,
+    foreign key (id_producto) references productos(id_producto) on delete restrict on update cascade
+);
+
+
+```
+
+---
+
+## Como correr el proyecto
+
+### Requisitos previos
+- Tener instalado IntelliJ IDEA
+- Tener instalado XAMPP (para MySQL)
+- Tener instalado MySQL Workbench
+- Tener instalado JDK 21 o superior (recomiendo: Java 21 Eclipse Temurin)
+ 
+### Backend
+1. Abrir la carpeta `backend/` en IntelliJ IDEA
+2. Configurar `application.properties` con los datos de MySQL
+3. Iniciar XAMPP y activar MySQL
+4. Ejecutar `GotagotaApplication.java`
+5. El backend corre en: `http://localhost:8080`
+
+### Frontend
+1. Abrir la carpeta `frontend/` en VsCode
+2. Abrir `index.html` con Live Server
+3. El frontend se comunica con el backend via fetch()
+ 
+> El frontend y el backend corren por separado.
+> El backend debe estar iniciado antes de abrir el frontend.
+
+### Configuracion de base de datos
+```
+spring.application.name=GameCore
+
+#Conexion MYSQL
+spring.datasource.url=jdbc:mysql://localhost:3306/gamecore_db?useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+#JPA / Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialecta
+
+# Puerto del servidor
+server.port=8080
+
+```
