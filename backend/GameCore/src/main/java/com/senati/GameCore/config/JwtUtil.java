@@ -13,7 +13,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "clave-secreta-gamecore-2026-segura";
+    private static final String SECRET = "clave-secreta-gamecore-2026-segura-jwt";
 
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10;
 
@@ -27,7 +27,7 @@ public class JwtUtil {
                 .setSubject(correo)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(getKey(), SignatureAlgorithm.ES256)
+                .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
