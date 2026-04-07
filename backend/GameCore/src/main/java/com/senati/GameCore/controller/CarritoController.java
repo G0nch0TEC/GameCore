@@ -1,4 +1,4 @@
 package com.senati.GameCore.controller;
 
-public class CarritoControler {
+public class CarritoController {
 }
