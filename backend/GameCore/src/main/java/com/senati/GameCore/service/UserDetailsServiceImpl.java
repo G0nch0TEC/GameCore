@@ -1,7 +1,8 @@
 package com.senati.GameCore.service;
 
+import com.senati.GameCore.model.Usuario;
 import com.senati.GameCore.repository.UsuarioRepository;
-import org.springframework.security.core.userdetails.User;
+import com.senati.GameCore.security.CustomUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,15 +21,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
 
-        // Busca el usuario en la base de datos por su correo
-        com.senati.GameCore.model.Usuario usuario = usuarioRepository.findByCorreo(correo)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + correo));
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: "+correo));
 
-        // Convierte tu Usuario a un UserDetails que Spring Security entiende
-        return User.builder()
-                .username(usuario.getCorreo())
-                .password(usuario.getContrasena())
-                .roles(usuario.getRol().name())
-                .build();
+        return new CustomUserDetails(usuario);
     }
 }

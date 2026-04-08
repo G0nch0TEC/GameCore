@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name="usuarios")
+@Table(name="usuario")
 public class Usuario {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -22,8 +22,8 @@ public class Usuario {
     private String contrasena;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "rol", columnDefinition = "ENUM('admin', 'cliente')")
-    private Rol rol = Rol.cliente;
+    @Column(name = "rol",  columnDefinition = "ENUM('ADMIN', 'CLIENTE')")
+    private Rol rol = Rol.CLIENTE;
 
     @Column(name="fecha_registro", updatable = false)
     private LocalDateTime fechaRegistro;
@@ -42,7 +42,7 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<Compra> compras;
 
-    public enum Rol { admin, cliente }
+    public enum Rol { ADMIN, CLIENTE }
 
     // obtener y insertar
 

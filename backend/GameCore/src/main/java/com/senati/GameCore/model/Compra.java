@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name="compras")
+@Table(name="compra")
 public class Compra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +29,9 @@ public class Compra {
         this.fechaCompra = LocalDateTime.now();
     }
 
-    public enum Estado { pendiente, pagado, cancelado }
+    public enum Estado { PENDIENTE, PAGADO, CANCELADO }
     @Enumerated(EnumType.STRING)
-    @Column(name="estado", columnDefinition = "ENUM('pendiente', 'pagado', 'cancelado')", nullable = false)
+    @Column(name="estado", columnDefinition = "ENUM('PENDIENTE', 'PAGADO', 'CANCELADO')", nullable = false)
     private Estado estado;
 
     @DecimalMin(value = "0.0", message = "El total no puede ser negativo")

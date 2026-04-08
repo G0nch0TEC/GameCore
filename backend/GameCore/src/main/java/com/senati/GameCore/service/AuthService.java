@@ -3,8 +3,10 @@ package com.senati.GameCore.service;
 import com.senati.GameCore.config.JwtUtil;
 import com.senati.GameCore.dto.LoginRequest;
 import com.senati.GameCore.dto.RegisterRequest;
-import com.senati.GameCore.dto.authResponse;
+import com.senati.GameCore.dto.AuthResponse;
+import com.senati.GameCore.model.Carrito;
 import com.senati.GameCore.model.Usuario;
+import com.senati.GameCore.repository.CarritoRepository;
 import com.senati.GameCore.repository.UsuarioRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,25 +17,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class authService {
+public class AuthService {
 
+    private CarritoRepository carritoRepository;
     private UsuarioRepository usuarioRepository;
     private PasswordEncoder passwordEncoder;
     private JwtUtil jwtUtil;
     private AuthenticationManager authenticationManager;
 
-    public authService(UsuarioRepository usuarioRepository,
-                          PasswordEncoder passwordEncoder,
-                          JwtUtil jwtUtil,
-                          AuthenticationManager authenticationManager) {
+    public AuthService(UsuarioRepository usuarioRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtUtil jwtUtil,
+                       AuthenticationManager authenticationManager,
+                       CarritoRepository carritoRepository) {
+
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
+        this.carritoRepository = carritoRepository;
     }
 
     @Transactional
-    public authResponse register(RegisterRequest registerRequest){
+    public AuthResponse register(RegisterRequest registerRequest){
         if (usuarioRepository.existsByCorreo(registerRequest.getCorreo())){
             throw new RuntimeException("Correo ya existe");
         }
@@ -43,14 +49,17 @@ public class authService {
         usuario.setCorreo(registerRequest.getCorreo());
         usuario.setContrasena(passwordEncoder.encode(registerRequest.getContrasena()));
 
-        usuarioRepository.save(usuario);
+        usuarioRepository.saveAndFlush(usuario);
+
+        Carrito carrito = new Carrito();
+        carrito.setUsuario(usuario);
+        carritoRepository.save(carrito);
 
         String token = jwtUtil.generateToken(usuario.getCorreo());
-
-        return new authResponse(token);
+        return new AuthResponse(token);
     }
 
-    public authResponse login(LoginRequest loginRequest) {
+    public AuthResponse login(LoginRequest loginRequest) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -62,6 +71,6 @@ public class authService {
         }
 
         String token = jwtUtil.generateToken(loginRequest.getCorreo());
-        return new authResponse(token);
+        return new AuthResponse(token);
     }
 }

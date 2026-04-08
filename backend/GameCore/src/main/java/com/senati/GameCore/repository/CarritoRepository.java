@@ -5,6 +5,7 @@ import com.senati.GameCore.model.Carrito;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ public class CarritoRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional(readOnly = true)
     public Optional<Carrito> findByIdUsuario(Integer idUsuario) {
         return entityManager.createQuery("SELECT c FROM Carrito c WHERE c.usuario.idUsuario = :idUsuario", Carrito.class)
                 .setParameter("idUsuario", idUsuario)
@@ -21,10 +23,12 @@ public class CarritoRepository {
                 .findFirst();
     }
 
+    @Transactional(readOnly = true)
     public Optional<Carrito> findByIdCarrito(Integer idCarrito) {
         return Optional.ofNullable(entityManager.find(Carrito.class, idCarrito));
     }
 
+    @Transactional
     public Carrito save(Carrito carrito) {
         if (carrito.getIdCarrito() == null) {
             entityManager.persist(carrito);
@@ -34,6 +38,7 @@ public class CarritoRepository {
         }
     }
 
+    @Transactional
     public void  delete(Integer idCarrito) {
         Carrito c = entityManager.find(Carrito.class, idCarrito);
         if (c != null) {

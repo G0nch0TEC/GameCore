@@ -1,11 +1,11 @@
 package com.senati.GameCore.dto;
 
-public class authResponse {
+public class AuthResponse {
     private String token;
 
-    public authResponse() {}
+    public AuthResponse() {}
 
-    public authResponse(String token) {
+    public AuthResponse(String token) {
         this.token = token;
     }
 

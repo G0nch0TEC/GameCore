@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "productos")
+@Table(name = "producto")
 public class Producto {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -36,10 +36,10 @@ public class Producto {
     @Column(name="img_url", columnDefinition = "TEXT")
     private String imgUrl;
 
-    public enum Estado { activo, inactivo, agotado}
+    public enum Estado { ACTIVO, INACTIVO, AGOTADO}
     @Enumerated(EnumType.STRING)
-    @Column(name="estado", columnDefinition = "ENUM('activo', 'inactivo', 'agotado')")
-    private Estado estado = Estado.activo;
+    @Column(name="estado", columnDefinition = "ENUM('ACTIVO', 'INACTIVO', 'AGOTADO')")
+    private Estado estado = Estado.ACTIVO;
 
     @Column(name="fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion;

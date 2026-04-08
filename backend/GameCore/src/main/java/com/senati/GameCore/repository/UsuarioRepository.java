@@ -4,6 +4,7 @@ import com.senati.GameCore.model.Usuario;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ public class UsuarioRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional
     public Usuario save(Usuario usuario) {
         if (usuario.getIdUsuario() == null) {
             entityManager.persist(usuario);
@@ -23,15 +25,29 @@ public class UsuarioRepository {
         }
     }
 
+    @Transactional
+    public Usuario saveAndFlush(Usuario usuario) {
+        if (usuario.getIdUsuario() == null) {
+            entityManager.persist(usuario);
+        } else {
+            usuario = entityManager.merge(usuario);
+        }
+        entityManager.flush(); // siempre hace flush, en ambos casos
+        return usuario;
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Usuario> findById(Integer idUsuario) {
         Usuario usuario = entityManager.find(Usuario.class, idUsuario);
         return Optional.ofNullable(usuario);
     }
 
+    @Transactional(readOnly = true)
     public List<Usuario> findAll() {
         return entityManager.createQuery("SELECT u FROM Usuario u", Usuario.class).getResultList();
     }
 
+    @Transactional
     public void deleteById(Integer idUsuario) {
         Usuario usuario = entityManager.find(Usuario.class, idUsuario);
         if (usuario != null) {
@@ -39,12 +55,14 @@ public class UsuarioRepository {
         }
     }
 
+    @Transactional(readOnly = true)
     public Optional<Usuario> findByCorreo(String correo) {
         return entityManager.createQuery(
           "SELECT u FROM Usuario u WHERE u.correo = :correo", Usuario.class)
                 .setParameter("correo", correo).getResultStream().findFirst();
     }
 
+    @Transactional(readOnly = true)
     public boolean existsByCorreo(String correo) {
         Long count = entityManager.createQuery("SELECT COUNT(u) FROM Usuario u WHERE u.correo = :correo", Long.class)
                 .setParameter("correo", correo)
@@ -52,6 +70,7 @@ public class UsuarioRepository {
         return count > 0;
     }
 
+    @Transactional(readOnly = true)
     public List<Usuario> findByRol(Usuario.Rol rol) {
         return entityManager.createQuery("SELECT u FROM Usuario u WHERE u.rol = :rol", Usuario.class)
                 .setParameter("rol", rol)
