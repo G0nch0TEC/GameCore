@@ -197,7 +197,7 @@ create table detalle_compra (
 1. Abrir la carpeta `backend/` en IntelliJ IDEA
 2. Configurar `application.properties` con los datos de MySQL
 3. Iniciar XAMPP y activar MySQL
-4. Ejecutar `GotagotaApplication.java`
+4. Ejecutar `GameCoreApplication.java`
 5. El backend corre en: `http://localhost:8080`
 
 ### Frontend
@@ -226,7 +226,7 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialecta
 
 #Clave
 jwt.secret=clave-secreta-gamecore-2026-segura-jwt-XkZ9mP2qL7vN4wR8
-jwt.expiration=36000000
+jwt.expiration=36000000 
 
 # Puerto del servidor
 server.port=8080
