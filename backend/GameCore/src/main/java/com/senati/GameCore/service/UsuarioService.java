@@ -1,5 +1,6 @@
 package com.senati.GameCore.service;
 
+import com.senati.GameCore.dto.UsuarioResponse;
 import com.senati.GameCore.model.Usuario;
 import com.senati.GameCore.repository.UsuarioRepository;
 import com.senati.GameCore.security.CustomUserDetails;
@@ -26,15 +27,16 @@ public class UsuarioService {
 
     // Ver su propio perfil — extrae el usuario del token JWT activo
     @Transactional(readOnly = true)
-    public Usuario verPerfilPropio() {
+    public UsuarioResponse verPerfilPropio() {
         String correo = obtenerCorreoAutenticado();
-        return usuarioRepository.findByCorreo(correo)
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return new UsuarioResponse(usuario);
     }
 
     // Actualizar nombre y/o correo del propio perfil
     @Transactional
-    public Usuario actualizarPerfilPropio(String nuevoNombre, String nuevoCorreo) {
+    public UsuarioResponse actualizarPerfilPropio(String nuevoNombre, String nuevoCorreo) {
         String correo = obtenerCorreoAutenticado();
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -49,8 +51,7 @@ public class UsuarioService {
             }
             usuario.setCorreo(nuevoCorreo);
         }
-
-        return usuarioRepository.save(usuario);
+        return new UsuarioResponse(usuarioRepository.save(usuario));
     }
 
     // Cambiar contraseña — requiere la contraseña actual para verificar identidad
@@ -76,31 +77,37 @@ public class UsuarioService {
 
     // Listar todos los usuarios
     @Transactional(readOnly = true)
-    public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
+    public List<UsuarioResponse> listarTodos() {
+        return usuarioRepository.findAll()
+                .stream()
+                .map(UsuarioResponse::new)
+                .toList();
     }
 
     // Listar por rol (ADMIN o CLIENTE)
     @Transactional(readOnly = true)
-    public List<Usuario> listarPorRol(Usuario.Rol rol) {
-        return usuarioRepository.findByRol(rol);
+    public List<UsuarioResponse> listarPorRol(Usuario.Rol rol) {
+        return usuarioRepository.findByRol(rol)
+                .stream()
+                .map(UsuarioResponse::new)
+                .toList();
     }
 
     // Buscar usuario por ID
     @Transactional(readOnly = true)
-    public Usuario buscarPorId(Integer idUsuario) {
-        return usuarioRepository.findById(idUsuario)
+    public UsuarioResponse buscarPorId(Integer idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + idUsuario));
+        return new UsuarioResponse(usuario);
     }
 
     // Cambiar rol de un usuario
     @Transactional
-    public Usuario cambiarRol(Integer idUsuario, Usuario.Rol nuevoRol) {
+    public UsuarioResponse cambiarRol(Integer idUsuario, Usuario.Rol nuevoRol) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + idUsuario));
-
         usuario.setRol(nuevoRol);
-        return usuarioRepository.save(usuario);
+        return new UsuarioResponse(usuarioRepository.save(usuario));
     }
 
     // Eliminar usuario por ID

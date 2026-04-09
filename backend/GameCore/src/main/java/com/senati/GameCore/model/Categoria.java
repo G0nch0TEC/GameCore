@@ -1,5 +1,6 @@
 package com.senati.GameCore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public class Categoria {
 
     //Mete y saca
 
+    @JsonIgnore
     public List<Producto> getProductos() { return productos; }
 
     public Integer getIdCategoria() {return idCategoria;}

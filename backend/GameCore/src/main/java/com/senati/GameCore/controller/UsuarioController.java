@@ -1,6 +1,6 @@
 package com.senati.GameCore.controller;
 
-
+import com.senati.GameCore.dto.UsuarioResponse;
 import com.senati.GameCore.model.Usuario;
 import com.senati.GameCore.service.UsuarioService;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +24,13 @@ public class UsuarioController {
 
     // VER PERFIL PROPIO (GET /usuarios/perfil)
     @GetMapping("/perfil")
-    public ResponseEntity<Usuario> verPerfil() {
+    public ResponseEntity<UsuarioResponse> verPerfil() {
         return ResponseEntity.ok(usuarioService.verPerfilPropio());
     }
 
     //Actualizar nombre y/o correo (PATCH /usuarios/perfil)
     @PatchMapping("/perfil")
-    public ResponseEntity<Usuario> actualizarPerfil(@RequestBody Map<String, String> body) {
+    public ResponseEntity<UsuarioResponse> actualizarPerfil(@RequestBody Map<String, String> body) {
         String nuevoNombre = body.get("nombre");
         String nuevoCorreo = body.get("correo");
         return  ResponseEntity.ok(usuarioService.actualizarPerfilPropio(nuevoNombre, nuevoCorreo));
@@ -50,7 +50,7 @@ public class UsuarioController {
     // GET /usuarios/admin/todos
     @GetMapping("/admin/todos")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Usuario>> listarTodos() {
+    public ResponseEntity<List<UsuarioResponse>> listarTodos() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
@@ -58,7 +58,7 @@ public class UsuarioController {
     // GET /usuarios/admin/rol?rol=CLIENTE
     @GetMapping("/admin/rol")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Usuario>> listarPorRol(@RequestParam Usuario.Rol rol) {
+    public ResponseEntity<List<UsuarioResponse>> listarPorRol(@RequestParam Usuario.Rol rol) {
         return ResponseEntity.ok(usuarioService.listarPorRol(rol));
     }
 
@@ -66,7 +66,7 @@ public class UsuarioController {
     // GET /usuarios/admin/{id}
     @GetMapping("/admin/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
@@ -74,7 +74,7 @@ public class UsuarioController {
     // PATCH /usuarios/admin/{id}/rol
     @PatchMapping("/admin/{id}/rol")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Usuario> cambiarRol(
+    public ResponseEntity<UsuarioResponse> cambiarRol(
             @PathVariable Integer id,
             @RequestBody Map<String, String> body) {
         Usuario.Rol nuevoRol = Usuario.Rol.valueOf(body.get("rol").toUpperCase());
