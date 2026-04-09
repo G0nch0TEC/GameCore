@@ -224,6 +224,10 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialecta
 
+#Clave
+jwt.secret=clave-secreta-gamecore-2026-segura-jwt-XkZ9mP2qL7vN4wR8
+jwt.expiration=36000000
+
 # Puerto del servidor
 server.port=8080
 
