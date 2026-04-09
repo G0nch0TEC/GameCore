@@ -2,12 +2,12 @@ create database gamecore_db;
 use gamecore_db;
 
 -- TABLA USUARIOS
-CREATE TABLE usuarios(
+CREATE TABLE usuario(
 	id_usuario int primary key auto_increment,
     nombre varchar(100) not null,
     correo varchar(150) not null unique,
     contrasena varchar(255) not null,
-    rol enum('admin', 'cliente') default 'cliente',
+    rol enum('ADMIN', 'CLIENTE') default 'CLIENTE',
     fecha_registro timestamp default current_timestamp
 );
 
@@ -20,7 +20,7 @@ create table categoria(
 );
 
 -- TABLA PRODUCTOS
-create table productos(
+create table producto(
 	id_producto int primary key auto_increment,
     id_categoria int not null,
     id_usuario int,
@@ -29,18 +29,18 @@ create table productos(
     precio decimal(10,2) not null check (precio > 0),
     stock int not null check(stock >= 0),
     img_url text,
-    estado ENUM('activo', 'inactivo', 'agotado') DEFAULT 'activo',
+    estado ENUM('ACTIVO', 'INACTIVO', 'AGOTADO') DEFAULT 'ACTIVO',
     fecha_creacion timestamp default current_timestamp,
     fecha_actualizacion timestamp default current_timestamp on update current_timestamp,
     foreign key (id_categoria) references categoria(id_categoria) on delete restrict on update cascade,
-    foreign key (id_usuario) references usuarios(id_usuario) on delete set null on update cascade
+    foreign key (id_usuario) references usuario(id_usuario) on delete set null on update cascade
 );
 
 -- TABLA CARRITOS
-create table carritos(
+create table carrito(
 	id_carrito int primary key auto_increment,
     id_usuario int not null unique,
-    foreign key (id_usuario) references usuarios(id_usuario) on delete cascade on update cascade
+    foreign key (id_usuario) references usuario(id_usuario) on delete cascade on update cascade
 );
 
 -- TABLA CARRITO DETALLE
@@ -52,18 +52,18 @@ create table carrito_detalle(
     cantidad int not null check (cantidad > 0),
     fecha_agregado timestamp default current_timestamp,
     unique (id_carrito, id_producto),
-    foreign key (id_carrito) references carritos(id_carrito) on delete cascade on update cascade,
-    foreign key (id_producto) references productos(id_producto) on delete cascade on update cascade
+    foreign key (id_carrito) references carrito(id_carrito) on delete cascade on update cascade,
+    foreign key (id_producto) references producto(id_producto) on delete cascade on update cascade
 );
 
 -- TABLA COMPRAS
-create table compras (
+create table compra (
     id_compra INT PRIMARY KEY AUTO_INCREMENT,
     id_usuario INT not null,
     fecha_compra TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    estado ENUM('pendiente', 'pagado', 'cancelado') NOT NULL,
+    estado ENUM('PENDIENTE', 'PAGADO', 'CANCELADO') NOT NULL,
     total DECIMAL(10,2) NOT NULL CHECK (total >= 0),
-    foreign key (id_usuario) references usuarios(id_usuario) on delete restrict on update cascade
+    foreign key (id_usuario) references usuario(id_usuario) on delete restrict on update cascade
 );
 
 -- TABLA: DETALLE_COMPRA
@@ -74,8 +74,8 @@ create table detalle_compra (
     cantidad int not null check (cantidad > 0),
     precio_unitario decimal(10,2) not null check (precio_unitario > 0),
     unique (id_compra, id_producto),
-    foreign key (id_compra) references compras(id_compra) on delete cascade on update cascade,
-    foreign key (id_producto) references productos(id_producto) on delete restrict on update cascade
+    foreign key (id_compra) references compra(id_compra) on delete cascade on update cascade,
+    foreign key (id_producto) references producto(id_producto) on delete restrict on update cascade
 );
 
 /*
