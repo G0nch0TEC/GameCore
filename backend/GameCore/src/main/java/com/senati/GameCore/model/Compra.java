@@ -1,5 +1,6 @@
 package com.senati.GameCore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
@@ -40,11 +41,13 @@ public class Compra {
 
     //getter and setter
 
+    @JsonIgnore
     public List<DetalleCompra> getDetalles() { return detalles; }
 
     public Integer getIdCompra() {return idCompra;}
     public void setIdCompra(Integer idCompra) {this.idCompra = idCompra;}
 
+    @JsonIgnore
     public Usuario getUsuario() {return usuario;}
     public void setUsuario(Usuario usuario) {this.usuario = usuario;}
 

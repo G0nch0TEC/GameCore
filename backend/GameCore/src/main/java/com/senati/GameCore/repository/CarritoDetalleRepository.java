@@ -33,6 +33,19 @@ public class CarritoDetalleRepository {
 
     }
 
+    @Transactional(readOnly = true)
+    public Optional<CarritoDetalle> findByIdDetalleAndIdUsuario(Integer idDetalle, Integer idUsuario) {
+        return entityManager.createQuery(
+                        "SELECT d FROM CarritoDetalle d " +
+                                "WHERE d.idDetalle = :idDetalle " +
+                                "AND d.carrito.usuario.idUsuario = :idUsuario",
+                        CarritoDetalle.class)
+                .setParameter("idDetalle", idDetalle)
+                .setParameter("idUsuario", idUsuario)
+                .getResultStream()
+                .findFirst();
+    }
+
     @Transactional
     public CarritoDetalle save(CarritoDetalle carritoDetalle) {
         if (carritoDetalle.getIdDetalle() == null) {

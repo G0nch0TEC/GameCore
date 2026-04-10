@@ -1,6 +1,7 @@
 package com.senati.GameCore.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -23,11 +24,13 @@ public class Carrito {
 
     //getter and setter
 
+    @JsonIgnore
     public List<CarritoDetalle> getDetalles() { return detalles; }
 
     public Integer getIdCarrito() {return idCarrito;}
     public void setIdCarrito(Integer idCarrito) {this.idCarrito = idCarrito;}
 
+    @JsonIgnore
     public Usuario getUsuario() {return usuario;}
     public void setUsuario(Usuario usuario) {this.usuario = usuario;}
 }
