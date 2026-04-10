@@ -4,6 +4,7 @@ import com.senati.GameCore.dto.CarritoResponse;
 import com.senati.GameCore.model.Carrito;
 import com.senati.GameCore.model.CarritoDetalle;
 import com.senati.GameCore.model.Producto;
+import com.senati.GameCore.model.Usuario;
 import com.senati.GameCore.repository.CarritoDetalleRepository;
 import com.senati.GameCore.repository.CarritoRepository;
 import com.senati.GameCore.repository.ProductoRepository;
@@ -93,22 +94,21 @@ public class CarritoService {
         detalle.setCantidad(cantidad);
         carritoDetalleRepository.save(detalle);
 
-        return buildResponse(detalle.getCarrito());
+        // Recargar el carrito desde repositorio para garantizar que usuario esté cargado
+        Carrito carrito = carritoRepository.findByIdUsuario(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+        return buildResponse(carrito);
     }
 
     // ─── ELIMINAR ÍTEM ────────────────────────────────────────────────────────
 
     @Transactional
     public CarritoResponse eliminarItem(Integer idUsuario, Integer idDetalle) {
-        Carrito carrito = carritoRepository.findByIdUsuario(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Carrito no encontrado para usuario: " + idUsuario));
+        CarritoDetalle detalle = carritoDetalleRepository
+                .findByIdDetalleAndIdUsuario(idDetalle, idUsuario)
+                .orElseThrow(() -> new RuntimeException("El ítem no pertenece a tu carrito o no existe"));
 
-        // Validar que el detalle pertenece a este carrito
-        boolean pertenece = carritoDetalleRepository.findByIdCarrito(carrito.getIdCarrito())
-                .stream().anyMatch(d -> d.getIdDetalle().equals(idDetalle));
-
-        if (!pertenece) throw new RuntimeException("El ítem no pertenece a tu carrito");
-
+        Carrito carrito = detalle.getCarrito();
         carritoDetalleRepository.deleteByIdDetalle(idDetalle);
         return buildResponse(carrito);
     }
@@ -127,8 +127,13 @@ public class CarritoService {
     // Si el usuario no tiene carrito todavía, lo crea automáticamente
     private Carrito obtenerOCrearCarrito(Integer idUsuario) {
         return carritoRepository.findByIdUsuario(idUsuario)
-                .orElseThrow(() -> new RuntimeException(
-                        "Carrito no encontrado para usuario: " + idUsuario));
+                .orElseGet(()->{
+                    Usuario usuario = usuarioRepository.findById(idUsuario)
+                            .orElseThrow(()-> new RuntimeException("Usuario no encontrado " + idUsuario));
+                    Carrito nuevo = new Carrito();
+                    nuevo.setUsuario(usuario);
+                    return carritoRepository.save(nuevo);
+                });
     }
 
     private CarritoResponse buildResponse(Carrito carrito) {

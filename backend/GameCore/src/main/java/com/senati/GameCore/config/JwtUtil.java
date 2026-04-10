@@ -21,7 +21,11 @@ public class JwtUtil {
     private long expiration;
 
     private Key getKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        byte[] KeyBytes = secret.getBytes();
+        if (KeyBytes.length < 32) {
+            throw new RuntimeException("jwt.secret debe tener al menos 32 caracteres (256 bits)");
+        }
+        return Keys.hmacShaKeyFor(KeyBytes);
     }
 
     //MÉTODO 1 — Genera un token nuevo a partir del email del usuario

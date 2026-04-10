@@ -77,8 +77,16 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponse> cambiarRol(
             @PathVariable Integer id,
             @RequestBody Map<String, String> body) {
-        Usuario.Rol nuevoRol = Usuario.Rol.valueOf(body.get("rol").toUpperCase());
-        return ResponseEntity.ok(usuarioService.cambiarRol(id, nuevoRol));
+        String rolStr = body.get("rol");
+        if(rolStr == null || rolStr.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        try{
+            Usuario.Rol nuevoRol = Usuario.Rol.valueOf(rolStr.toUpperCase());
+            return ResponseEntity.ok(usuarioService.cambiarRol(id, nuevoRol));
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Rol invalido "+ rolStr +". Valores válidos: ADMIN, CLIENTE ");
+        }
     }
 
     // Eliminar usuario
