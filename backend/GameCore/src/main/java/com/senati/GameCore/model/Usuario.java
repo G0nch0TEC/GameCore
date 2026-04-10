@@ -1,5 +1,6 @@
 package com.senati.GameCore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,8 +47,13 @@ public class Usuario {
 
     // obtener y insertar
 
+    @JsonIgnore
     public Carrito getCarrito() { return carrito; }
+
+    @JsonIgnore
     public List<Producto> getProductos() { return productos; }
+
+    @JsonIgnore
     public List<Compra> getCompras() { return compras; }
 
     public Integer getIdUsuario() { return idUsuario; }
