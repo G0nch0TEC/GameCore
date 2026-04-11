@@ -45,6 +45,8 @@ public class SecurityConfig {
                 // Definimos qué rutas son públicas y cuáles necesitan token
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .requestMatchers("/compras/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/compras/**").authenticated()
                         .anyRequest().authenticated()
                 )
 

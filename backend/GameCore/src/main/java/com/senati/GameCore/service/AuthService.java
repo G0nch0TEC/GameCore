@@ -19,11 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthService {
 
-    private CarritoRepository carritoRepository;
-    private UsuarioRepository usuarioRepository;
-    private PasswordEncoder passwordEncoder;
-    private JwtUtil jwtUtil;
-    private AuthenticationManager authenticationManager;
+    private final CarritoRepository carritoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
     public AuthService(UsuarioRepository usuarioRepository,
                        PasswordEncoder passwordEncoder,
