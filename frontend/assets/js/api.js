@@ -44,7 +44,7 @@ async function request(endpoint, options = {}, auth = true){
     }
 
     // para respuestas sin cuerpo
-    if(res.status===204 || res.headers.get("Content-Lenght") === "0"){
+    if(res.status===204 || res.headers.get("Content-Length") === "0"){
     return null;
     }
 
@@ -183,7 +183,7 @@ export const carrito = {
     /** PATCH */
     actualizarCantidad: (idDetalle, cantidad) =>
         request(`/carrito/items/${idDetalle}?cantidad=${cantidad}`, {
-            method: "PACTCH",
+            method: "PATCH",
         }),
 
     /** DELETE quitar item */
@@ -235,7 +235,7 @@ export const usuarios = {
     }),
 
     /** PATCH - cambiar contraseña */
-    cambiarContrasena: (contrasenaActual, contrasenaNueva) => request("usuarios/contrasena", {
+    cambiarContrasena: (contrasenaActual, contrasenaNueva) => request("/usuarios/contrasena", {
         method: "PATCH",
         body: JSON.stringify({ contrasenaActual, contrasenaNueva })
     }), 
