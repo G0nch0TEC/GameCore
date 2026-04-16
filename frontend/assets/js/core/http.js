@@ -46,7 +46,7 @@ export async function request(endpoint, options = {}, auth = true){
                 msg = "Sesión expirada. Inicia sesión nuevamente.";
                 break;
             case 403:
-                msg = "La contraseña actual es incorrecta o no tienes permiso.";
+                msg = "No se puede.";
                 break;
             case 404:
                 msg = "Recurso no encontrado.";

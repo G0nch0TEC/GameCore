@@ -19,7 +19,7 @@ public class Compra {
     private List<DetalleCompra> detalles;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="id_usuario", nullable = false)
+    @JoinColumn(name="id_usuario", nullable = true)
     private Usuario usuario;
 
     @Column(name="fecha_compra", updatable = false)

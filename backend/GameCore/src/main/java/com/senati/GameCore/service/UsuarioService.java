@@ -1,8 +1,11 @@
 package com.senati.GameCore.service;
 
 import com.senati.GameCore.dto.UsuarioResponse;
+import com.senati.GameCore.model.Compra;
+import com.senati.GameCore.model.DetalleCompra;
+import com.senati.GameCore.model.Producto;
 import com.senati.GameCore.model.Usuario;
-import com.senati.GameCore.repository.UsuarioRepository;
+import com.senati.GameCore.repository.*;
 import com.senati.GameCore.security.CustomUserDetails;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,11 +19,26 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CarritoRepository carritoRepository;
+    private final CarritoDetalleRepository carritoDetalleRepository;
+    private final CompraRepository compraRepository;
+    private final DetalleCompraRepository detalleCompraRepository;
+    private final ProductoRepository productoRepository;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
-                          PasswordEncoder passwordEncoder) {
-        this.usuarioRepository = usuarioRepository;
-        this.passwordEncoder = passwordEncoder;
+                          PasswordEncoder passwordEncoder,
+                          CarritoRepository carritoRepository,
+                          CarritoDetalleRepository carritoDetalleRepository,
+                          CompraRepository compraRepository,
+                          DetalleCompraRepository detalleCompraRepository,
+                          ProductoRepository productoRepository) {
+        this.usuarioRepository         = usuarioRepository;
+        this.passwordEncoder           = passwordEncoder;
+        this.carritoRepository         = carritoRepository;
+        this.carritoDetalleRepository  = carritoDetalleRepository;
+        this.compraRepository          = compraRepository;
+        this.detalleCompraRepository   = detalleCompraRepository;
+        this.productoRepository        = productoRepository;
     }
 
     // ─── MÉTODOS PARA CUALQUIER USUARIO AUTENTICADO ───────────────────────────
@@ -110,12 +128,38 @@ public class UsuarioService {
         return new UsuarioResponse(usuarioRepository.save(usuario));
     }
 
-    // Eliminar usuario por ID
-    @Transactional
+    // Eliminar usuario por ID — limpia todas las relaciones manualmente
     public void eliminarUsuario(Integer idUsuario) {
-        if (usuarioRepository.findById(idUsuario).isEmpty()) {
-            throw new RuntimeException("Usuario no encontrado con id: " + idUsuario);
+        // Evitar que el admin se elimine a sí mismo
+        String correoAutenticado = obtenerCorreoAutenticado();
+        Usuario usuarioActual = usuarioRepository.findByCorreo(correoAutenticado)
+                .orElseThrow(() -> new RuntimeException("Usuario autenticado no encontrado"));
+
+        if (usuarioActual.getIdUsuario().equals(idUsuario)) {
+            throw new RuntimeException("No puedes eliminar tu propia cuenta");
         }
+        // 1. Eliminar detalles del carrito y el carrito
+        carritoRepository.findByIdUsuario(idUsuario).ifPresent(carrito -> {
+            carritoDetalleRepository.clearByIdCarrito(carrito.getIdCarrito());
+            carritoRepository.delete(carrito.getIdCarrito());
+        });
+
+        // 2. desvincular
+        List<Compra> compras = compraRepository.findByIdUsuario(idUsuario);
+
+        for (Compra compra : compras) {
+            compra.setUsuario(null);        // 👈 quitar relación
+            compraRepository.save(compra);  // 👈 guardar cambio
+        }
+
+        // 3. Desvincular productos del usuario (no se eliminan, solo se desvinculan)
+        List<Producto> productos = productoRepository.findByUsuario(idUsuario);
+        for (Producto p : productos) {
+            p.setUsuario(null);
+            productoRepository.save(p);
+        }
+
+        // 4. Finalmente eliminar el usuario
         usuarioRepository.deleteById(idUsuario);
     }
 

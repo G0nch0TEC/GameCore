@@ -59,11 +59,11 @@ create table carrito_detalle(
 -- tabla compras
 create table compra(
     id_compra INT PRIMARY KEY AUTO_INCREMENT,
-    id_usuario INT not null,
+    id_usuario INT null,
     fecha_compra TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     estado ENUM('PENDIENTE', 'PAGADO', 'CANCELADO') NOT NULL,
     total DECIMAL(10,2) NOT NULL CHECK (total >= 0),
-    foreign key (id_usuario) references usuario(id_usuario) on delete restrict on update cascade
+    foreign key (id_usuario) references usuario(id_usuario) on delete set null on update cascade
 );
 
 -- TABLA: DETALLE_COMPRA

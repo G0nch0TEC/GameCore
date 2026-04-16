@@ -17,8 +17,8 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private JwtUtil jwtUtil;
-    private UserDetailsServiceImpl userDetailsService;
+    private final JwtUtil jwtUtil;
+    private final UserDetailsServiceImpl userDetailsService;
 
     // Constructor — inyectamos las dependencias
     public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
@@ -37,7 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 2. Verificar que el header existe y empieza con "Bearer "
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            // No tiene token — deja pasar la petición (el SecurityConfig decidirá si es pública o no)
             filterChain.doFilter(request, response);
             return;
         }
@@ -47,7 +46,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 4. Validar que el token sea correcto y no haya expirado
         if (!jwtUtil.validateToken(token)) {
-            filterChain.doFilter(request, response);
+            // ← Antes dejaba pasar, ahora responde 401 correctamente
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token inválido o expirado");
             return;
         }
 

@@ -55,7 +55,7 @@ public class AuthService {
         carrito.setUsuario(usuario);
         carritoRepository.save(carrito);
 
-        String token = jwtUtil.generateToken(usuario.getCorreo());
+        String token = jwtUtil.generateToken(usuario.getCorreo(), usuario.getRol().name());
         return new AuthResponse(token);
     }
 
@@ -66,11 +66,15 @@ public class AuthService {
                             loginRequest.getCorreo(),
                             loginRequest.getContrasena())
             );
-        }catch (AuthenticationException e){
+        } catch (AuthenticationException e) {
             throw new BadCredentialsException("credenciales invalidas");
         }
 
-        String token = jwtUtil.generateToken(loginRequest.getCorreo());
+        // ← Buscar usuario para obtener su rol actual
+        Usuario usuario = usuarioRepository.findByCorreo(loginRequest.getCorreo())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        String token = jwtUtil.generateToken(usuario.getCorreo(), usuario.getRol().name());
         return new AuthResponse(token);
     }
 }

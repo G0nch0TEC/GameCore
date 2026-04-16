@@ -95,4 +95,12 @@ public class ProductoRepository {
                 .setMaxResults(size)
                 .getResultList();
     }
+
+    @Transactional(readOnly = true)
+    public List<Producto> findByUsuario(Integer idUsuario) {
+        return entityManager.createQuery(
+                        "SELECT p FROM Producto p WHERE p.usuario.idUsuario = :idUsuario", Producto.class)
+                .setParameter("idUsuario", idUsuario)
+                .getResultList();
+    }
 }

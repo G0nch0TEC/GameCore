@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
@@ -28,10 +29,20 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(KeyBytes);
     }
 
+    public String extractRol(String token) {
+        return (String) Jwts.parser()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("rol");
+    }
+
     //MÉTODO 1 — Genera un token nuevo a partir del email del usuario
-    public String generateToken(String correo) {
+    public String generateToken(String correo, String rol) {
         return Jwts.builder()
                 .setSubject(correo)
+                .addClaims(Map.of("rol", rol))   // ← guarda el rol en el token
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
