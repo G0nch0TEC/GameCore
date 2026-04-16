@@ -69,6 +69,13 @@ public class CompraController {
         return ResponseEntity.ok(compraService.listarTodas());
     }
 
+    // GET /compras/admin/{id}  →  ver detalle de cualquier compra (solo ADMIN)
+    @GetMapping("/admin/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CompraResponse> verCompraAdmin(@PathVariable Integer id) {
+        return ResponseEntity.ok(compraService.verCompraAdmin(id));
+    }
+
     // GET /compras/admin/estado?estado=PENDIENTE
     @GetMapping("/admin/estado")
     @PreAuthorize("hasRole('ADMIN')")

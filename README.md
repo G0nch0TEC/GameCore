@@ -104,16 +104,16 @@ Una compra puede incluir varios productos (detalles), pero cada detalle de compr
 
 ```sql
 -- TABLA USUARIOS
-CREATE TABLE usuarios(
+CREATE TABLE usuario(
 	id_usuario int primary key auto_increment,
     nombre varchar(100) not null,
     correo varchar(150) not null unique,
     contrasena varchar(255) not null,
-    rol enum('admin', 'cliente') default 'cliente',
+    rol enum('ADMIN', 'CLIENTE') default 'CLIENTE',
     fecha_registro timestamp default current_timestamp
 );
 
--- TABLA CATEGORIA
+-- tabla categoria
 create table categoria(
 	id_categoria int primary key auto_increment,
     nombre varchar(100) not null unique,
@@ -121,31 +121,31 @@ create table categoria(
     fecha_creacion timestamp default current_timestamp
 );
 
--- TABLA PRODUCTOS
-create table productos(
+-- tabla productos
+create table producto(
 	id_producto int primary key auto_increment,
     id_categoria int not null,
     id_usuario int,
     nombre_producto varchar(150) not null,
-    descripcion text,
+    descripcion mediumtext,
     precio decimal(10,2) not null check (precio > 0),
     stock int not null check(stock >= 0),
     img_url text,
-    estado ENUM('activo', 'inactivo', 'agotado') DEFAULT 'activo',
+    estado ENUM('ACTIVO', 'INACTIVO', 'AGOTADO') DEFAULT 'ACTIVO',
     fecha_creacion timestamp default current_timestamp,
     fecha_actualizacion timestamp default current_timestamp on update current_timestamp,
     foreign key (id_categoria) references categoria(id_categoria) on delete restrict on update cascade,
-    foreign key (id_usuario) references usuarios(id_usuario) on delete set null on update cascade
+    foreign key (id_usuario) references usuario(id_usuario) on delete set null on update cascade
 );
 
--- TABLA CARRITOS
-create table carritos(
+-- tabla carritos
+create table carrito(
 	id_carrito int primary key auto_increment,
     id_usuario int not null unique,
-    foreign key (id_usuario) references usuarios(id_usuario) on delete cascade on update cascade
+    foreign key (id_usuario) references usuario(id_usuario) on delete cascade on update cascade
 );
 
--- TABLA CARRITO DETALLE
+-- tabla carrito_detalle
 
 create table carrito_detalle(
 	id_detalle int primary key auto_increment,
@@ -154,18 +154,18 @@ create table carrito_detalle(
     cantidad int not null check (cantidad > 0),
     fecha_agregado timestamp default current_timestamp,
     unique (id_carrito, id_producto),
-    foreign key (id_carrito) references carritos(id_carrito) on delete cascade on update cascade,
-    foreign key (id_producto) references productos(id_producto) on delete cascade on update cascade
+    foreign key (id_carrito) references carrito(id_carrito) on delete cascade on update cascade,
+    foreign key (id_producto) references producto(id_producto) on delete cascade on update cascade
 );
 
--- TABLA COMPRAS
-create table compras (
+-- tabla compras
+create table compra(
     id_compra INT PRIMARY KEY AUTO_INCREMENT,
-    id_usuario INT not null,
+    id_usuario INT null,
     fecha_compra TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    estado ENUM('pendiente', 'pagado', 'cancelado') NOT NULL,
+    estado ENUM('PENDIENTE', 'PAGADO', 'CANCELADO') NOT NULL,
     total DECIMAL(10,2) NOT NULL CHECK (total >= 0),
-    foreign key (id_usuario) references usuarios(id_usuario) on delete restrict on update cascade
+    foreign key (id_usuario) references usuario(id_usuario) on delete set null on update cascade
 );
 
 -- TABLA: DETALLE_COMPRA
@@ -176,8 +176,8 @@ create table detalle_compra (
     cantidad int not null check (cantidad > 0),
     precio_unitario decimal(10,2) not null check (precio_unitario > 0),
     unique (id_compra, id_producto),
-    foreign key (id_compra) references compras(id_compra) on delete cascade on update cascade,
-    foreign key (id_producto) references productos(id_producto) on delete restrict on update cascade
+    foreign key (id_compra) references compra(id_compra) on delete cascade on update cascade,
+    foreign key (id_producto) references producto(id_producto) on delete restrict on update cascade
 );
 
 
@@ -190,8 +190,9 @@ create table detalle_compra (
 ### Requisitos previos
 - Tener instalado IntelliJ IDEA
 - Tener instalado XAMPP (para MySQL)
+- Tener instalado Visual Studio Code
 - Tener instalado MySQL Workbench
-- Tener instalado JDK 21 o superior (recomiendo: Java 21 Eclipse Temurin)
+- Tener instalado JDK 21 o superior (Java 21 Eclipse Temurin)
  
 ### Backend
 1. Abrir la carpeta `backend/` en IntelliJ IDEA
@@ -201,7 +202,7 @@ create table detalle_compra (
 5. El backend corre en: `http://localhost:8080`
 
 ### Frontend
-1. Abrir la carpeta `frontend/` en VsCode
+1. Abrir la carpeta `GameCore/` en VsCode
 2. Abrir `index.html` con Live Server
 3. El frontend se comunica con el backend via fetch()
  
@@ -214,21 +215,18 @@ spring.application.name=GameCore
 
 #Conexion MYSQL
 spring.datasource.url=jdbc:mysql://localhost:3306/gamecore_db?useSSL=false&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD:1234}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 #JPA / Hibernate
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialecta
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 
 #Clave
-jwt.secret=clave-secreta-gamecore-2026-segura-jwt-XkZ9mP2qL7vN4wR8
-jwt.expiration=36000000 
-
-# Puerto del servidor
-server.port=8080
+jwt.secret=${JWT_SECRET:clave-secreta-gamecore-2026-segura-jwt-XkZ9mP2qL7vN4wR8}
+jwt.expiration=${JWT_EXPIRATION:36000000}
 
 ```

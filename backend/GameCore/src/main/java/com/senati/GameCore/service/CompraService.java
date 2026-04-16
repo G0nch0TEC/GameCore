@@ -182,6 +182,15 @@ public class CompraService {
 
     // ─── ADMIN ────────────────────────────────────────────────────────────────
 
+    // Ver detalle de cualquier compra — uso admin (sin validar propietario)
+    @Transactional(readOnly = true)
+    public CompraResponse verCompraAdmin(Integer idCompra) {
+        Compra compra = compraRepository.findById(idCompra)
+                .orElseThrow(() -> new RuntimeException("Compra no encontrada: " + idCompra));
+        List<DetalleCompra> detalles = detalleCompraRepository.findByIdCompra(idCompra);
+        return new CompraResponse(compra, detalles);
+    }
+
     // Listar todas las compras
     @Transactional(readOnly = true)
     public List<CompraResponse> listarTodas() {
