@@ -53,6 +53,24 @@ Solucion tecnologica: Desarrollar un sistema web de gestión que centralice la i
 - Figma (diseño UI/UX)
 - Draw.io (diagramas)
 
+## Estructura del proyecto
+
+```
+GameCore/
+├── backend/          → Spring Boot (Java)
+│   ├── src/
+│   ├── pom.xml
+│   └── ...
+├── frontend/         → HTML, CSS, JS
+│   ├── css/
+│   ├── js/
+│   └── ...
+│   
+└── index.html
+```
+
+### DIAGRAMA DE FIGMA UI/UX
+![FIGMA](resource/GameCore.png)
 
 ## Base de datos
  
