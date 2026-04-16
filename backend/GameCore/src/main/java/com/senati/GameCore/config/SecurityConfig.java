@@ -15,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.*;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +40,7 @@ public class SecurityConfig {
         http
                 // Desactivamos CSRF porque usamos JWT, no sesiones
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 // Le decimos que no use sesiones — cada petición se autentica con su token
                 .sessionManagement(session -> session
@@ -45,11 +49,13 @@ public class SecurityConfig {
                 // Definimos qué rutas son públicas y cuáles necesitan token
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .requestMatchers("/productos/admin/**").hasRole("ADMIN")
                         .requestMatchers("/compras/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/categorias/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/usuarios/admin/**").hasRole("ADMIN")
                         .requestMatchers("/compras/**").authenticated()
                         .anyRequest().authenticated()
                 )
-
                 // Registramos nuestro proveedor de autenticación
                 .authenticationProvider(authenticationProvider())
 
@@ -80,5 +86,20 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOrigins(List.of("http://127.0.0.1:5500"));
+        config.setAllowedMethods(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
 }

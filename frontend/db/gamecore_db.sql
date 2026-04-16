@@ -11,7 +11,7 @@ CREATE TABLE usuario(
     fecha_registro timestamp default current_timestamp
 );
 
--- TABLA CATEGORIA
+-- tabla categoria
 create table categoria(
 	id_categoria int primary key auto_increment,
     nombre varchar(100) not null unique,
@@ -19,13 +19,13 @@ create table categoria(
     fecha_creacion timestamp default current_timestamp
 );
 
--- TABLA PRODUCTOS
+-- tabla productos
 create table producto(
 	id_producto int primary key auto_increment,
     id_categoria int not null,
     id_usuario int,
     nombre_producto varchar(150) not null,
-    descripcion text,
+    descripcion mediumtext,
     precio decimal(10,2) not null check (precio > 0),
     stock int not null check(stock >= 0),
     img_url text,
@@ -36,14 +36,14 @@ create table producto(
     foreign key (id_usuario) references usuario(id_usuario) on delete set null on update cascade
 );
 
--- TABLA CARRITOS
+-- tabla carritos
 create table carrito(
 	id_carrito int primary key auto_increment,
     id_usuario int not null unique,
     foreign key (id_usuario) references usuario(id_usuario) on delete cascade on update cascade
 );
 
--- TABLA CARRITO DETALLE
+-- tabla carrito_detalle
 
 create table carrito_detalle(
 	id_detalle int primary key auto_increment,
@@ -56,8 +56,8 @@ create table carrito_detalle(
     foreign key (id_producto) references producto(id_producto) on delete cascade on update cascade
 );
 
--- TABLA COMPRAS
-create table compra (
+-- tabla compras
+create table compra(
     id_compra INT PRIMARY KEY AUTO_INCREMENT,
     id_usuario INT not null,
     fecha_compra TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

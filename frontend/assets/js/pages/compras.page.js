@@ -1,26 +1,8 @@
-// ============================================================
-//  compras.js — GameCore · Historial de compras del cliente
-//  Depende de: api.js, auth.js
-// ============================================================
+import { mostrarToast, formatearPrecio, actualizarBadgeCarrito, formatearFecha } from "../core/utils.js";
+import { requireAuth } from "../core/routes.js";
+import { initNavbar } from "./auth.page.js";
+import { compraService } from "../services/compras.service.js";
 
-import {
-  compras as comprasAPI,
-  formatearPrecio,
-  formatearFecha,
-  mostrarToast,
-} from "./api.js";
-import { requireAuth, initNavbar } from "./auth.js";
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-
-/**
- * Punto de entrada.
- * Usar en compras.html:
- *   <script type="module">
- *     import { initCompras } from "../assets/js/compras.js";
- *     initCompras();
- *   </script>
- */
 export async function initCompras() {
   requireAuth();
   initNavbar();
@@ -39,7 +21,7 @@ async function cargarHistorial() {
   mostrarSkeleton(skeleton, true);
 
   try {
-    const compras = await comprasAPI.misCompras();
+    const compras = await compraService.misCompras();
     renderizarHistorial(compras);
     guardarEnCache(compras);
   } catch (err) {
@@ -92,10 +74,13 @@ function renderizarHistorial(compras) {
     contador.textContent = `${compras.length} ${compras.length === 1 ? "compra" : "compras"}`;
   }
 
-  // Eventos: expandir detalle y cancelar
+  // Eventos: expandir detalle, realizar y cancelar
   ordenadas.forEach((c) => {
     document.getElementById(`btn-detalle-${c.idCompra}`)
       ?.addEventListener("click", () => toggleDetalle(c.idCompra));
+
+    document.getElementById(`btn-realizar-${c.idCompra}`)
+      ?.addEventListener("click", () => realizarCompra(c.idCompra));
 
     document.getElementById(`btn-cancelar-${c.idCompra}`)
       ?.addEventListener("click", () => cancelarCompra(c.idCompra));
@@ -104,8 +89,9 @@ function renderizarHistorial(compras) {
 
 /** Genera el HTML de una tarjeta de compra colapsable */
 function crearTarjetaCompra(c) {
-  const estado     = c.estado?.toLowerCase() ?? "pendiente";
+  const estado       = c.estado?.toLowerCase() ?? "pendiente";
   const esCancelable = estado === "pendiente";
+  const esRealizable = estado === "pendiente";
 
   return `
     <article class="tarjeta-compra estado-${estado}" id="compra-${c.idCompra}">
@@ -135,6 +121,11 @@ function crearTarjetaCompra(c) {
         <button class="btn-ver-detalle" id="btn-detalle-${c.idCompra}">
           Ver detalle ▾
         </button>
+        ${esRealizable
+          ? `<button class="btn-realizar-compra" id="btn-realizar-${c.idCompra}">
+               ✅ Realizar compra
+             </button>`
+          : ""}
         ${esCancelable
           ? `<button class="btn-cancelar-compra" id="btn-cancelar-${c.idCompra}">
                Cancelar compra
@@ -235,6 +226,53 @@ function toggleDetalle(idCompra) {
   btn.textContent     = visible ? "Ver detalle ▾" : "Ocultar detalle ▴";
 }
 
+// ─── REALIZAR COMPRA ──────────────────────────────────────────────────────────
+
+/** Confirma y realiza una compra pendiente */
+async function realizarCompra(idCompra) {
+  const confirmar = window.confirm(
+    `¿Confirmar la compra #${idCompra}?\n\nSe procesará el pago y no podrá deshacerse.`
+  );
+  if (!confirmar) return;
+
+  const btnRealizar  = document.getElementById(`btn-realizar-${idCompra}`);
+  const btnCancelar  = document.getElementById(`btn-cancelar-${idCompra}`);
+
+  if (btnRealizar) {
+    btnRealizar.disabled    = true;
+    btnRealizar.textContent = "Procesando...";
+  }
+  if (btnCancelar) btnCancelar.disabled = true;
+
+  try {
+    await compraService.pagar(idCompra);
+    mostrarToast(`Compra #${idCompra} realizada correctamente. ✅`, "success");
+
+    // Actualizar la tarjeta al estado pagado sin recargar
+    const tarjeta = document.getElementById(`compra-${idCompra}`);
+    if (tarjeta) {
+      tarjeta.classList.remove("estado-pendiente");
+      tarjeta.classList.add("estado-pagado");
+
+      const badge = tarjeta.querySelector(".badge-estado");
+      if (badge) {
+        badge.className   = "badge-estado badge-pagado";
+        badge.textContent = labelEstado("pagado");
+      }
+
+      if (btnRealizar) btnRealizar.remove();
+      if (btnCancelar) btnCancelar.remove();
+    }
+  } catch (err) {
+    mostrarToast(err.message || "No se pudo realizar la compra.", "error");
+    if (btnRealizar) {
+      btnRealizar.disabled    = false;
+      btnRealizar.textContent = "✅ Realizar compra";
+    }
+    if (btnCancelar) btnCancelar.disabled = false;
+  }
+}
+
 // ─── CANCELAR COMPRA ──────────────────────────────────────────────────────────
 
 /** Cancela una compra pendiente */
@@ -251,7 +289,7 @@ async function cancelarCompra(idCompra) {
   }
 
   try {
-    await comprasAPI.cancelar(idCompra);
+    await compraService.cancelar(idCompra);
     mostrarToast(`Compra #${idCompra} cancelada correctamente.`, "info");
 
     // Actualizar solo el badge de estado en la tarjeta sin recargar todo

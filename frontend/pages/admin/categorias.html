@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameCore — Categorías</title>
+  <link rel="stylesheet" href="../../assets/css/admin.css" />
+</head>
+<body>
+
+<div class="gc-layout">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
+  <aside class="gc-sidebar" id="gc-sidebar">
+
+    <div class="gc-sidebar__brand">
+      <div class="gc-sidebar__logo">🎮</div>
+      <span class="gc-sidebar__brand-name">GameCore</span>
+    </div>
+
+    <nav class="gc-sidebar__nav">
+
+      <span class="gc-nav-label">Principal</span>
+
+      <a href="dashboard.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🏠</span>
+        Dashboard
+      </a>
+
+      <span class="gc-nav-label">Catálogo</span>
+
+      <a href="producto.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🎮</span>
+        Productos
+      </a>
+
+      <a href="categorias.html" class="gc-nav-link active">
+        <span class="gc-nav-link__icon">🗂️</span>
+        Categorías
+      </a>
+
+      <span class="gc-nav-label">Ventas</span>
+
+      <a href="compras.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🧾</span>
+        Compras
+      </a>
+
+      <span class="gc-nav-label">Usuarios</span>
+
+      <a href="usuarios.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">👥</span>
+        Usuarios
+      </a>
+
+      <span class="gc-nav-label">Tienda</span>
+
+      <a href="../productos.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🛍️</span>
+        Ver tienda
+      </a>
+
+    </nav>
+
+    <div class="gc-sidebar__footer">
+      <button class="gc-btn-logout" id="btn-logout">
+        <span>🚪</span> Cerrar sesión
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ══ MAIN ═════════════════════════════════════════════════ -->
+  <main class="gc-main">
+
+    <header class="gc-topbar">
+      <div class="gc-topbar__breadcrumb">
+        <span>Admin</span>
+        <span class="sep">›</span>
+        <span>Catálogo</span>
+        <span class="sep">›</span>
+        <span class="active">Categorías</span>
+      </div>
+      <div class="gc-topbar__actions">
+        <span class="gc-topbar__admin-tag" id="topbar-admin-name">Admin</span>
+      </div>
+    </header>
+
+    <section class="gc-content">
+
+      <div class="gc-page-header">
+        <div>
+          <h1 class="gc-page-title">Categorías</h1>
+          <p class="gc-page-subtitle">Organiza los productos por tipo o género</p>
+        </div>
+        <button class="gc-btn gc-btn--primary" id="btn-nueva-categoria">
+          ＋ Nueva categoría
+        </button>
+      </div>
+
+      <div class="gc-card">
+        <div class="gc-card__header">
+          <h2 class="gc-card__title">Lista de categorías</h2>
+          <div class="gc-search-box">
+            <span class="gc-search-box__icon">🔍</span>
+            <input type="text" class="gc-input-search"
+                   id="input-busqueda-categoria" placeholder="Buscar categoría..." />
+          </div>
+        </div>
+
+        <div class="gc-table-wrap">
+          <table class="gc-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Fecha creación</th>
+                <th>Opciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-categorias-body">
+              <tr>
+                <td colspan="5" style="text-align:center;color:var(--gc-text-muted);padding:36px;">
+                  Cargando categorías...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<div id="gc-toast-container"></div>
+
+<!-- ══ MODAL CATEGORÍA ════════════════════════════════════════ -->
+<div class="gc-modal-overlay" id="modal-categoria-admin">
+  <div class="gc-modal" style="max-width:420px;">
+
+    <div class="gc-modal__header">
+      <h3 class="gc-modal__title" id="modal-categoria-titulo">Nueva categoría</h3>
+      <button class="gc-modal__close btn-cerrar-modal" aria-label="Cerrar">✕</button>
+    </div>
+
+    <form id="form-categoria" autocomplete="off">
+      <div class="gc-modal__body">
+
+        <div class="gc-form-group">
+          <label for="fc-nombre">Nombre *</label>
+          <input type="text" id="fc-nombre" name="nombre_categoria"
+                 placeholder="Ej: Acción, RPG, Estrategia..." required />
+        </div>
+
+        <div class="gc-form-group">
+          <label for="fc-descripcion">Descripción</label>
+          <textarea id="fc-descripcion" name="descripcion_categoria"
+                    placeholder="Descripción breve de la categoría..."></textarea>
+        </div>
+
+      </div>
+
+      <div class="gc-modal__footer">
+        <button type="button" class="gc-btn gc-btn--outline btn-cerrar-modal">Cancelar</button>
+        <button type="submit" class="gc-btn gc-btn--primary">💾 Guardar</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initAdminCategorias } from "../../assets/js/admin/categorias.js";
+  initAdminCategorias();
+</script>
+
+</body>
+</html>

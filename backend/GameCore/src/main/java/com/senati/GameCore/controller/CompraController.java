@@ -44,6 +44,14 @@ public class CompraController {
         return ResponseEntity.ok(compraService.verCompra(getIdUsuario(auth), id));
     }
 
+    // PATCH /compras/{id}/pagar  →  pagar si está PENDIENTE
+    @PatchMapping("/{id}/pagar")
+    public ResponseEntity<CompraResponse> pagarCompra(
+            Authentication auth,
+            @PathVariable Integer id) {
+        return ResponseEntity.ok(compraService.pagarCompra(getIdUsuario(auth), id));
+    }
+
     // PATCH /compras/{id}/cancelar  →  cancelar si está PENDIENTE
     @PatchMapping("/{id}/cancelar")
     public ResponseEntity<CompraResponse> cancelarCompra(

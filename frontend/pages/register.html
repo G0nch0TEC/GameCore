@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameCore — Crear cuenta</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+
+<div class="gc-auth-wrap">
+  <div class="gc-auth-card">
+
+    <!-- Brand -->
+    <div class="gc-auth-brand">
+      <div class="gc-auth-brand__logo">🎮</div>
+      <span class="gc-auth-brand__name">GameCore</span>
+    </div>
+
+    <h1 class="gc-auth-title">Crear cuenta</h1>
+
+    <form id="form-register" class="gc-auth-form" autocomplete="off" novalidate>
+
+      <div class="gc-auth-form-group">
+        <label for="reg-nombre">Nombre completo</label>
+        <div class="input-wrap">
+          <input
+            type="text"
+            id="reg-nombre"
+            placeholder="Tu nombre"
+            autocomplete="name"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="gc-auth-form-group">
+        <label for="reg-correo">Correo electrónico</label>
+        <div class="input-wrap">
+          <input
+            type="email"
+            id="reg-correo"
+            placeholder="tu@correo.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="gc-auth-form-group">
+        <label for="reg-contrasena">Contraseña</label>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="reg-contrasena"
+            placeholder="Mínimo 6 caracteres"
+            autocomplete="new-password"
+            minlength="6"
+            required
+          />
+          <button type="button" class="toggle-pass" data-target="reg-contrasena">👁</button>
+        </div>
+      </div>
+
+      <div class="gc-auth-form-group">
+        <label for="reg-contrasena2">Confirmar contraseña</label>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="reg-contrasena2"
+            placeholder="Repite tu contraseña"
+            autocomplete="new-password"
+            minlength="6"
+            required
+          />
+          <button type="button" class="toggle-pass" data-target="reg-contrasena2">👁</button>
+        </div>
+      </div>
+
+      <!-- Error message -->
+      <div id="register-error" class="gc-auth-error"></div>
+
+      <button type="submit" class="gc-auth-submit">Crear cuenta</button>
+
+    </form>
+
+    <div class="gc-auth-footer">
+      ¿Ya tienes cuenta?
+      <a href="../../index.html">Inicia sesión</a>
+    </div>
+
+  </div>
+</div>
+
+<div id="gc-toast-container"></div>
+
+<script type="module">
+  import { initRegister, initPasswordToggles } from "../assets/js/pages/auth.page.js";
+  initRegister();
+  initPasswordToggles();
+</script>
+
+</body>
+</html>

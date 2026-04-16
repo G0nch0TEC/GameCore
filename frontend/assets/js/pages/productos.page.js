@@ -1,26 +1,12 @@
-// ============================================================
-//  producto.js — GameCore · Catálogo de productos
-//  Depende de: api.js, auth.js
-// ============================================================
+import { mostrarToast, formatearPrecio, actualizarBadgeCarrito } from "../core/utils.js";
+import { requireAuth } from "../core/routes.js";
+import { initNavbar } from "./auth.page.js";
+import { productoService }  from "../services/producto.service.js";
+import { categoriaService } from "../services/categoria.service.js";
+import { carritoService }   from "../services/carrito.service.js";
+let todosLosProductos = [];
+let categoriaActiva   = null;
 
-import { productos, categorias, carrito, formatearPrecio, mostrarToast, actualizarBadgeCarrito, user } from "./api.js";
-import { requireAuth, initNavbar } from "./auth.js";
-
-// ─── ESTADO LOCAL ─────────────────────────────────────────────────────────────
-
-let todosLosProductos = [];   // cache de productos cargados
-let categoriaActiva   = null; // id de categoría seleccionada (null = todas)
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-
-/**
- * Punto de entrada principal.
- * Llamar en productos.html con:
- *   <script type="module">
- *     import { initProductos } from "../assets/js/producto.js";
- *     initProductos();
- *   </script>
- */
 export async function initProductos() {
   requireAuth();
   initNavbar();
@@ -39,7 +25,7 @@ async function cargarCategorias() {
   if (!lista) return;
 
   try {
-    const cats = await categorias.listar();
+    const cats = await categoriaService.listar();
 
     // Opción "Todas"
     lista.innerHTML = `
@@ -83,7 +69,7 @@ async function cargarProductos() {
   mostrarSkeleton(skeleton, true);
 
   try {
-    todosLosProductos = await productos.listarDisponibles();
+    todosLosProductos = await productoService.listarDisponibles();
     filtrarYRenderizar();
   } catch (err) {
     mostrarError(grid, "No se pudieron cargar los productos. Intenta de nuevo.");
@@ -247,7 +233,7 @@ async function agregarAlCarrito(idProducto, btn) {
   btn.textContent = "Agregando...";
 
   try {
-    const carritoActualizado = await carrito.agregar(idProducto, 1);
+    const carritoActualizado = await carritoService.agregar(idProducto, 1);
     const totalItems = carritoActualizado.detalles?.length ?? 0;
     actualizarBadgeCarrito(totalItems);
     mostrarToast("¡Producto agregado al carrito! 🎮", "success");
@@ -282,7 +268,7 @@ async function abrirModalDetalle(idProducto) {
   document.body.style.overflow = "hidden";
 
   try {
-    const p = await productos.buscarPorId(idProducto);
+    const p = await productoService.buscarPorId(idProducto);
     const imagenUrl = p.imgUrl || "/frontend/assets/image/Shrek.jpg";
     const agotado   = p.stock === 0;
 
@@ -424,7 +410,7 @@ function actualizarContador(total) {
 /** Sincroniza el badge del carrito al cargar la página */
 async function sincronizarCarritoBadge() {
   try {
-    const carritoData = await carrito.ver();
+    const carritoData = await carritoService.ver();
     const total = carritoData?.detalles?.length ?? 0;
     actualizarBadgeCarrito(total);
   } catch {

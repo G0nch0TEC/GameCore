@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameCore — Productos</title>
+  <link rel="stylesheet" href="../../assets/css/admin.css" />
+</head>
+<body>
+
+<div class="gc-layout">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
+  <aside class="gc-sidebar" id="gc-sidebar">
+
+    <div class="gc-sidebar__brand">
+      <div class="gc-sidebar__logo">🎮</div>
+      <span class="gc-sidebar__brand-name">GameCore</span>
+    </div>
+
+    <nav class="gc-sidebar__nav">
+
+      <span class="gc-nav-label">Principal</span>
+
+      <a href="dashboard.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🏠</span>
+        Dashboard
+      </a>
+
+      <span class="gc-nav-label">Catálogo</span>
+
+      <a href="producto.html" class="gc-nav-link active">
+        <span class="gc-nav-link__icon">🎮</span>
+        Productos
+      </a>
+
+      <a href="categorias.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🗂️</span>
+        Categorías
+      </a>
+
+      <span class="gc-nav-label">Ventas</span>
+
+      <a href="compras.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🧾</span>
+        Compras
+      </a>
+
+      <span class="gc-nav-label">Usuarios</span>
+
+      <a href="usuarios.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">👥</span>
+        Usuarios
+      </a>
+
+      <span class="gc-nav-label">Tienda</span>
+
+      <a href="../productos.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🛍️</span>
+        Ver tienda
+      </a>
+
+    </nav>
+
+    <div class="gc-sidebar__footer">
+      <button class="gc-btn-logout" id="btn-logout">
+        <span>🚪</span> Cerrar sesión
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ══ MAIN ═════════════════════════════════════════════════ -->
+  <main class="gc-main">
+
+    <header class="gc-topbar">
+      <div class="gc-topbar__breadcrumb">
+        <span>Admin</span>
+        <span class="sep">›</span>
+        <span>Catálogo</span>
+        <span class="sep">›</span>
+        <span class="active">Productos</span>
+      </div>
+      <div class="gc-topbar__actions">
+        <span class="gc-topbar__admin-tag" id="topbar-admin-name">Admin</span>
+      </div>
+    </header>
+
+    <section class="gc-content">
+
+      <div class="gc-page-header">
+        <div>
+          <h1 class="gc-page-title">Productos</h1>
+          <p class="gc-page-subtitle">Gestiona el catálogo de juegos y artículos</p>
+        </div>
+        <button class="gc-btn gc-btn--primary" id="btn-nuevo-producto">
+          ＋ Nuevo producto
+        </button>
+      </div>
+
+      <div class="gc-card">
+        <div class="gc-card__header">
+          <h2 class="gc-card__title">Catálogo</h2>
+          <div class="gc-search-box">
+            <span class="gc-search-box__icon">🔍</span>
+            <input
+              type="text"
+              class="gc-input-search"
+              id="input-busqueda-producto"
+              placeholder="Buscar producto..."
+            />
+          </div>
+        </div>
+
+        <div id="skeleton-productos-admin" style="padding:20px;display:none;">
+          <div class="gc-skeleton" style="height:36px;margin-bottom:10px;"></div>
+          <div class="gc-skeleton" style="height:36px;margin-bottom:10px;opacity:.7;"></div>
+          <div class="gc-skeleton" style="height:36px;opacity:.4;"></div>
+        </div>
+
+        <div class="gc-table-wrap">
+          <table class="gc-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Estado</th>
+                <th>Opciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-productos-body">
+              <tr>
+                <td colspan="7" style="text-align:center;color:var(--gc-text-muted);padding:36px;">
+                  Cargando productos...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<div id="gc-toast-container"></div>
+
+<!-- ══ MODAL PRODUCTO ══════════════════════════════════════════ -->
+<div class="gc-modal-overlay" id="modal-producto-admin">
+  <div class="gc-modal">
+
+    <div class="gc-modal__header">
+      <h3 class="gc-modal__title" id="modal-producto-titulo">Nuevo producto</h3>
+      <button class="gc-modal__close btn-cerrar-modal" aria-label="Cerrar">✕</button>
+    </div>
+
+    <form id="form-producto" autocomplete="off">
+      <div class="gc-modal__body">
+
+        <div class="gc-form-group">
+          <label for="fp-nombre">Nombre del producto *</label>
+          <input type="text" id="fp-nombre" name="nombre_producto"
+                 placeholder="Ej: The Legend of Zelda" required />
+        </div>
+
+        <div class="gc-form-group">
+          <label for="fp-descripcion">Descripción</label>
+          <textarea id="fp-descripcion" name="descripcion"
+                    placeholder="Descripción breve del producto..."></textarea>
+        </div>
+
+        <div class="gc-form-row">
+          <div class="gc-form-group">
+            <label for="fp-precio">Precio (S/) *</label>
+            <input type="number" id="fp-precio" name="precio"
+                   placeholder="0.00" min="0" step="0.01" required />
+          </div>
+          <div class="gc-form-group">
+            <label for="fp-stock">Stock *</label>
+            <input type="number" id="fp-stock" name="stock"
+                   placeholder="0" min="0" required />
+          </div>
+        </div>
+
+        <div class="gc-form-row">
+          <div class="gc-form-group">
+            <label for="select-categoria-producto">Categoría *</label>
+            <select id="select-categoria-producto" name="id_categoria" required>
+              <option value="">— Selecciona —</option>
+            </select>
+          </div>
+          <div class="gc-form-group">
+            <label for="fp-estado">Estado</label>
+            <select id="fp-estado" name="estado">
+              <option value="ACTIVO">Activo</option>
+              <option value="INACTIVO">Inactivo</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ── Imagen ─────────────────────────────────────────── -->
+        <div class="gc-form-group">
+          <label for="fp-img">URL de imagen</label>
+          <input type="url" id="fp-img" name="fp-img"
+                 placeholder="https://ejemplo.com/imagen.jpg" />
+        </div>
+
+        <div class="gc-form-group">
+          <label for="fp-img-file">— o sube un archivo —</label>
+          <input type="file" id="fp-img-file" accept="image/*" />
+        </div>
+
+        <div id="img-preview-wrap" style="display:none;margin-top:4px;">
+          <img id="img-preview" alt="Preview"
+          style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;border:1px solid var(--gc-border);" />
+        </div>
+        <!-- ──────────────────────────────────────────────────── -->
+
+      </div>
+
+      <div class="gc-modal__footer">
+        <button type="button" class="gc-btn gc-btn--outline btn-cerrar-modal">Cancelar</button>
+        <button type="submit" class="gc-btn gc-btn--primary">💾 Guardar</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initAdminProductos } from "../../assets/js/admin/productos.js";
+  initAdminProductos();
+</script>
+
+</body>
+</html>

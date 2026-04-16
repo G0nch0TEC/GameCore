@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameCore — Iniciar sesión</title>
+  <link rel="stylesheet" href="frontend/assets/css/style.css" />
+</head>
+<body>
+
+<div class="gc-auth-wrap">
+  <div class="gc-auth-card">
+
+    <!-- Brand -->
+    <div class="gc-auth-brand">
+      <div class="gc-auth-brand__logo">🎮</div>
+      <span class="gc-auth-brand__name">GameCore</span>
+    </div>
+
+    <h1 class="gc-auth-title">Iniciar sesión</h1>
+
+    <form id="form-login" class="gc-auth-form" autocomplete="off" novalidate>
+
+      <div class="gc-auth-form-group">
+        <label for="login-correo">Correo electrónico</label>
+        <div class="input-wrap">
+          <input
+            type="email"
+            id="login-correo"
+            placeholder="tu@correo.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="gc-auth-form-group">
+        <label for="login-contrasena">Contraseña</label>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="login-contrasena"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+          <button type="button" class="toggle-pass" data-target="login-contrasena">👁</button>
+        </div>
+      </div>
+
+      <!-- Error message -->
+      <div id="login-error" class="gc-auth-error"></div>
+
+      <button type="submit" class="gc-auth-submit">Ingresar</button>
+
+    </form>
+
+    <div class="gc-auth-footer">
+      ¿No tienes cuenta?
+      <a href="/frontend/pages/register.html">Regístrate aquí</a>
+    </div>
+
+  </div>
+</div>
+
+<div id="gc-toast-container"></div>
+
+<script type="module">
+  import { initLogin, initPasswordToggles } from "/frontend/assets/js/pages/auth.page.js";
+  initLogin();
+  initPasswordToggles();
+</script>
+
+</body>
+</html>

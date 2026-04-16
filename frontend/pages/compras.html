@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameCore — Mis compras</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <style>
+    .gc-compras-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .gc-compras-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    #contador-compras {
+      font-size: 13px;
+      color: var(--gc-text-muted);
+      font-weight: 600;
+    }
+
+    /* Filtros */
+    .gc-compras-filtros {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .btn-filtro-estado {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--gc-border);
+      background: transparent;
+      color: var(--gc-text-muted);
+      font-size: 12.5px;
+      font-weight: 700;
+      transition: all var(--gc-transition);
+    }
+
+    .btn-filtro-estado:hover  { border-color: var(--gc-amber); color: var(--gc-amber); }
+    .btn-filtro-estado.activo { background: var(--gc-amber); color: #0D0D0D; border-color: var(--gc-amber); }
+
+    /* Skeleton */
+    #skeleton-compras { display: none; }
+
+    .skeleton-compra-card {
+      background: var(--gc-surface);
+      border: 1px solid var(--gc-border);
+      border-radius: var(--gc-radius);
+      padding: 18px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .skeleton-row { display: flex; gap: 12px; }
+
+    .skeleton-block {
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--gc-surface2) 25%, var(--gc-border) 50%, var(--gc-surface2) 75%);
+      background-size: 200% 100%;
+      animation: skeletonPulse 1.4s infinite;
+    }
+
+    @keyframes skeletonPulse {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Lista */
+    #lista-compras { display: flex; flex-direction: column; gap: 14px; }
+
+    /* Tarjeta de compra */
+    .tarjeta-compra {
+      background: var(--gc-surface);
+      border: 1px solid var(--gc-border);
+      border-radius: var(--gc-radius);
+      overflow: hidden;
+      transition: border-color var(--gc-transition);
+    }
+
+    .tarjeta-compra:hover         { border-color: var(--gc-amber-dark); }
+    .tarjeta-compra.estado-pagado    { border-left: 3px solid #34D399; }
+    .tarjeta-compra.estado-pendiente { border-left: 3px solid var(--gc-amber); }
+    .tarjeta-compra.estado-cancelado { border-left: 3px solid #E05252; opacity: .75; }
+
+    .compra-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .compra-meta { display: flex; align-items: center; gap: 12px; }
+
+    .compra-id {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--gc-text);
+    }
+
+    .compra-fecha { font-size: 12px; color: var(--gc-text-muted); }
+    .compra-resumen { display: flex; align-items: center; gap: 14px; }
+
+    .compra-total {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gc-amber);
+    }
+
+    /* Preview imágenes */
+    .compra-preview {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px 12px;
+    }
+
+    .preview-imgs { display: flex; gap: 6px; align-items: center; }
+
+    .preview-img {
+      width: 44px; height: 44px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--gc-border);
+    }
+
+    .preview-mas {
+      width: 44px; height: 44px;
+      border-radius: 6px;
+      background: var(--gc-surface2);
+      border: 1px solid var(--gc-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gc-text-muted);
+    }
+
+    .compra-num-items { font-size: 12px; color: var(--gc-text-muted); }
+
+    /* Acciones */
+    .compra-acciones {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px 14px;
+    }
+
+    .btn-ver-detalle {
+      padding: 6px 14px;
+      background: transparent;
+      border: 1px solid var(--gc-border);
+      border-radius: 7px;
+      color: var(--gc-text-muted);
+      font-size: 12.5px;
+      font-weight: 700;
+      transition: border-color var(--gc-transition), color var(--gc-transition);
+    }
+
+    .btn-ver-detalle:hover { border-color: var(--gc-amber); color: var(--gc-amber); }
+
+    .btn-cancelar-compra {
+      padding: 6px 14px;
+      background: transparent;
+      border: 1px solid rgba(224,82,82,.4);
+      border-radius: 7px;
+      color: #E05252;
+      font-size: 12.5px;
+      font-weight: 700;
+      transition: background var(--gc-transition);
+    }
+
+    .btn-cancelar-compra:hover    { background: rgba(224,82,82,.1); }
+    .btn-cancelar-compra:disabled { opacity: .5; cursor: not-allowed; }
+
+    .btn-realizar-compra {
+      padding: 6px 14px;
+      background: var(--gc-amber);
+      border: 1px solid var(--gc-amber);
+      border-radius: 7px;
+      color: #0D0D0D;
+      font-size: 12.5px;
+      font-weight: 700;
+      transition: background var(--gc-transition), box-shadow var(--gc-transition);
+    }
+
+    .btn-realizar-compra:hover    { background: var(--gc-amber-light); box-shadow: 0 0 10px rgba(245,166,35,.35); }
+    .btn-realizar-compra:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Panel de detalle */
+    .compra-detalle-panel {
+      border-top: 1px solid var(--gc-border);
+      padding: 16px 18px;
+      background: var(--gc-bg);
+    }
+
+    .detalle-thumb {
+      width: 38px; height: 38px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--gc-border);
+      display: block;
+    }
+
+    .detalle-img-cell  { width: 50px; }
+    .detalle-nombre    { font-weight: 600; }
+    .detalle-cantidad,
+    .detalle-precio-unit { color: var(--gc-text-muted); font-size: 13px; }
+
+    .detalle-subtotal {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gc-amber);
+    }
+
+    .sin-detalle { color: var(--gc-text-muted); font-size: 13px; }
+
+    /* Vacío / Error */
+    .compras-vacio, .compras-error {
+      text-align: center;
+      padding: 64px 20px;
+      color: var(--gc-text-muted);
+    }
+
+    .compras-vacio-icon { font-size: 52px; display: block; margin-bottom: 14px; }
+    .compras-vacio h3   { font-size: 18px; color: var(--gc-text); margin-bottom: 8px; }
+    .compras-vacio p,
+    .compras-error p    { font-size: 13.5px; margin-bottom: 22px; }
+
+    .btn-ir-productos {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      background: var(--gc-amber);
+      border-radius: 9px;
+      color: #0D0D0D;
+      font-size: 14px;
+      font-weight: 700;
+      transition: background var(--gc-transition), box-shadow var(--gc-transition);
+    }
+
+    .btn-ir-productos:hover {
+      background: var(--gc-amber-light);
+      box-shadow: 0 0 14px rgba(245,166,35,.35);
+    }
+
+    .compras-error button {
+      padding: 8px 20px;
+      background: var(--gc-amber);
+      border: none;
+      border-radius: 8px;
+      color: #0D0D0D;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .gc-compras-wrap { padding: 20px 16px; }
+      .compra-header, .compra-acciones, .compra-preview { padding-left: 14px; padding-right: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ════════════════════════════════════════════════ -->
+<nav class="gc-navbar">
+  <a href="productos.html" class="gc-navbar__brand">
+    <div class="gc-navbar__logo">🎮</div>
+    <span class="gc-navbar__name">GameCore</span>
+  </a>
+
+  <div class="gc-navbar__links">
+    <a href="productos.html" class="gc-navbar__link">Tienda</a>
+    <a href="carrito.html"   class="gc-navbar__link">Carrito</a>
+    <a href="compras.html"   class="gc-navbar__link active">Mis compras</a>
+    <a href="perfil.html"    class="gc-navbar__link">Perfil</a>
+  </div>
+
+  <div id="nav-admin-links">
+    <a href="./admin/dashboard.html" class="gc-navbar__link" style="color:var(--gc-amber);">
+      ⚙️ Admin
+    </a>
+  </div>
+
+  <div class="gc-navbar__spacer"></div>
+
+  <div class="gc-navbar__right">
+    <span class="gc-navbar__user">Hola, <span id="nav-user-name">...</span></span>
+    <a href="carrito.html" class="gc-btn-carrito">
+      🛒 Carrito
+      <span id="carrito-badge">0</span>
+    </a>
+    <button class="gc-btn-logout-nav" id="btn-logout">Salir</button>
+  </div>
+</nav>
+
+<!-- ══ MIS COMPRAS ═══════════════════════════════════════════ -->
+<div class="gc-compras-wrap">
+
+  <div class="gc-compras-header">
+    <h1 class="gc-page-title" style="margin-bottom:0;">🧾 Mis compras</h1>
+    <span id="contador-compras"></span>
+  </div>
+
+  <div class="gc-compras-filtros">
+    <button class="btn-filtro-estado activo" data-estado="todos">Todas</button>
+    <button class="btn-filtro-estado" data-estado="pendiente">⏳ Pendientes</button>
+    <button class="btn-filtro-estado" data-estado="pagado">✅ Pagadas</button>
+    <button class="btn-filtro-estado" data-estado="cancelado">❌ Canceladas</button>
+  </div>
+
+  <!-- Skeleton -->
+  <div id="skeleton-compras">
+    <div class="skeleton-compra-card">
+      <div class="skeleton-row">
+        <div class="skeleton-block" style="width:70px;height:16px;"></div>
+        <div class="skeleton-block" style="width:130px;height:16px;"></div>
+      </div>
+      <div class="skeleton-block" style="width:100%;height:12px;"></div>
+      <div class="skeleton-block" style="width:55%;height:12px;"></div>
+    </div>
+    <div class="skeleton-compra-card" style="opacity:.6;">
+      <div class="skeleton-row">
+        <div class="skeleton-block" style="width:70px;height:16px;"></div>
+        <div class="skeleton-block" style="width:110px;height:16px;"></div>
+      </div>
+      <div class="skeleton-block" style="width:100%;height:12px;"></div>
+      <div class="skeleton-block" style="width:45%;height:12px;"></div>
+    </div>
+  </div>
+
+  <!-- Lista (la rellena compras.page.js) -->
+  <div id="lista-compras"></div>
+
+</div>
+
+<div id="gc-toast-container"></div>
+
+<script type="module">
+  import { initCompras } from "../assets/js/pages/compras.page.js";
+  initCompras();
+</script>
+
+</body>
+</html>

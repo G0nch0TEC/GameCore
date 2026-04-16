@@ -10,6 +10,7 @@ public class ProductoRequest {
     private Integer stock;
     private String imgUrl;
     private Integer idCategoria;
+    private String estado;
 
     public String getNombre() { return nombre; }
     public String getDescripcion() { return descripcion; }
@@ -17,4 +18,5 @@ public class ProductoRequest {
     public Integer getStock() { return stock; }
     public String getImgUrl() { return imgUrl; }
     public Integer getIdCategoria() { return idCategoria; }
+    public String getEstado() { return estado; }
 }

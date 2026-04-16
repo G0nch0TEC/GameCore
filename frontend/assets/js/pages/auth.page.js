@@ -1,58 +1,8 @@
-// ============================================================
-//  auth.js — GameCore · Autenticación y control de sesión
-//  Depende de: api.js
-// ============================================================
+import { authService } from "../services/auth.service.js";
+import { user }                               from "../core/storage.js";
+import { mostrarToast }                       from "../core/utils.js";
+import { redirectIfLogged, redirectByRole }   from "../core/routes.js";
 
-import { auth, token, user, mostrarToast } from "./api.js";
-
-// ─── PROTECCIÓN DE RUTAS ──────────────────────────────────────────────────────
-
-/**
- * Llama esto en cualquier página que requiera estar autenticado.
- * Si no hay token → redirige al login.
- */
-export function requireAuth() {
-  if (!token.exists()) {
-    window.location.href = "/index.html";
-  }
-}
-
-/**
- * Llama esto en páginas exclusivas para ADMIN.
- * Si no es admin → redirige a productos (área cliente).
- */
-export function requireAdmin() {
-  requireAuth();
-  if (!user.isAdmin()) {
-    window.location.href = "/frontend/pages/productos.html";
-  }
-}
-
-/**
- * Llama esto en index.html (login/register).
- * Si ya está autenticado → redirige según su rol.
- */
-export function redirectIfLogged() {
-  if (token.exists()) {
-    redirectByRole();
-  }
-}
-
-/** Redirige según el rol del usuario autenticado */
-function redirectByRole() {
-  if (user.isAdmin()) {
-    window.location.href = "/frontend/pages/admin/dashboard.html";
-  } else {
-    window.location.href = "/frontend/pages/productos.html";
-  }
-}
-
-// ─── FORMULARIO DE LOGIN ──────────────────────────────────────────────────────
-
-/**
- * Inicializa el formulario de login.
- * Busca el form con id="form-login" en el DOM.
- */
 export function initLogin() {
   redirectIfLogged();
 
@@ -79,7 +29,7 @@ export function initLogin() {
     }
 
     try {
-      await auth.login(correo, contrasena);
+      await authService.login(correo, contrasena);
       mostrarToast("¡Bienvenido de vuelta!", "success");
       setTimeout(redirectByRole, 600);
     } catch (err) {
@@ -147,7 +97,7 @@ export function initRegister() {
     setLoading(btnSubmit, true, "Registrando...");
 
     try {
-      await auth.register(nombre, correo, contrasena);
+      await authService.register(nombre, correo, contrasena);
       mostrarToast("¡Cuenta creada con éxito!", "success");
       setTimeout(redirectByRole, 600);
     } catch (err) {
@@ -191,7 +141,7 @@ export function initNavbar() {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      auth.logout();
+      authService.logout();
     });
   }
 
@@ -201,6 +151,13 @@ export function initNavbar() {
   if (badge) {
     badge.textContent = count;
     badge.style.display = count > 0 ? "inline-flex" : "none";
+  }
+
+  // Rellenar nombre en topbar admin (si existe el elemento)
+  const topbarName = document.getElementById("topbar-admin-name");
+  if (topbarName) {
+    const u = user.get(); // ya viene fresco porque requireAdmin() corrió primero
+    if (u?.nombre) topbarName.textContent = u.nombre;
   }
 }
 

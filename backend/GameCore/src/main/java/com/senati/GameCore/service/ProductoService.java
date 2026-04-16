@@ -114,6 +114,9 @@ public class ProductoService {
         if (request.getImgUrl() != null && !request.getImgUrl().isBlank()) {
             producto.setImgUrl(request.getImgUrl());
         }
+        if (request.getEstado() != null && !request.getEstado().isBlank()) {
+            producto.setEstado(Producto.Estado.valueOf(request.getEstado().toUpperCase()));
+        }
         if (request.getIdCategoria() != null) {
             Categoria categoria = categoriaRepository.findById(request.getIdCategoria())
                     .orElseThrow(() -> new RuntimeException("Categoría no encontrada: " + request.getIdCategoria()));

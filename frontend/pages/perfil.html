@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameCore — Mi perfil</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <style>
+    .gc-perfil-wrap {
+      max-width: 560px;
+      margin: 40px auto;
+      padding: 0 24px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── Avatar card ─────────────────────────────────────────── */
+    .perfil-avatar-card {
+      background: linear-gradient(135deg, var(--gc-amber-dark), var(--gc-orange));
+      border-radius: 14px;
+      padding: 28px 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .perfil-avatar {
+      width: 64px; height: 64px;
+      background: rgba(0,0,0,.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .perfil-nombre-display {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .perfil-correo-display {
+      font-size: 13px;
+      color: rgba(255,255,255,.8);
+      margin-top: 2px;
+    }
+
+    .perfil-rol-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      background: rgba(0,0,0,.2);
+      color: rgba(255,255,255,.9);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    /* ── Sección card ────────────────────────────────────────── */
+    .perfil-section {
+      background: var(--gc-surface);
+      border: 1px solid var(--gc-border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .perfil-section__header {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--gc-border);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .perfil-section__icon { font-size: 18px; }
+
+    .perfil-section__title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gc-text);
+    }
+
+    .perfil-section__body {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ── Form groups ─────────────────────────────────────────── */
+    .gc-perfil-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .gc-perfil-group label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gc-text-muted);
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+
+    .gc-perfil-group input {
+      background: var(--gc-surface2);
+      border: 1px solid var(--gc-border);
+      border-radius: 8px;
+      padding: 10px 13px;
+      color: var(--gc-text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color var(--gc-transition);
+    }
+
+    .gc-perfil-group input:focus { border-color: var(--gc-amber); }
+    .gc-perfil-group input::placeholder { color: var(--gc-text-muted); }
+    .gc-perfil-group input:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .gc-form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* ── Error / Success messages ────────────────────────────── */
+    .perfil-msg {
+      display: none;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .perfil-msg.error   {
+      background: rgba(224,82,82,.1);
+      border: 1px solid rgba(224,82,82,.3);
+      color: #E05252;
+    }
+
+    .perfil-msg.success {
+      background: rgba(52,211,153,.1);
+      border: 1px solid rgba(52,211,153,.3);
+      color: #34D399;
+    }
+
+    /* ── Botones ─────────────────────────────────────────────── */
+    .perfil-section__footer {
+      padding: 0 22px 22px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-perfil-save {
+      padding: 9px 22px;
+      background: var(--gc-amber);
+      border: none;
+      border-radius: 8px;
+      color: #0D0D0D;
+      font-size: 13.5px;
+      font-weight: 700;
+      transition: background var(--gc-transition), box-shadow var(--gc-transition);
+    }
+
+    .btn-perfil-save:hover:not(:disabled) {
+      background: var(--gc-amber-light);
+      box-shadow: 0 0 14px rgba(245,166,35,.35);
+    }
+
+    .btn-perfil-save:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* ── Input contraseña con ojo ────────────────────────────── */
+    .input-pass-wrap {
+      position: relative;
+    }
+
+    .input-pass-wrap input { padding-right: 40px; width: 100%; }
+
+    .toggle-pass {
+      position: absolute;
+      right: 10px; top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--gc-text-muted);
+      font-size: 16px;
+      padding: 2px;
+      transition: color var(--gc-transition);
+    }
+
+    .toggle-pass:hover { color: var(--gc-text); }
+
+    /* ── Skeleton ────────────────────────────────────────────── */
+    .perfil-skeleton {
+      background: linear-gradient(90deg, var(--gc-surface2) 25%, var(--gc-border) 50%, var(--gc-surface2) 75%);
+      background-size: 200% 100%;
+      animation: skeletonPulse 1.4s infinite;
+      border-radius: 6px;
+    }
+
+    @keyframes skeletonPulse {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      .gc-form-row { grid-template-columns: 1fr; }
+      .perfil-avatar-card { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ════════════════════════════════════════════════ -->
+<nav class="gc-navbar">
+  <a href="productos.html" class="gc-navbar__brand">
+    <div class="gc-navbar__logo">🎮</div>
+    <span class="gc-navbar__name">GameCore</span>
+  </a>
+
+  <div class="gc-navbar__links">
+    <a href="productos.html" class="gc-navbar__link">Tienda</a>
+    <a href="carrito.html"   class="gc-navbar__link">Carrito</a>
+    <a href="compras.html"   class="gc-navbar__link">Mis compras</a>
+    <a href="perfil.html"    class="gc-navbar__link active">Perfil</a>
+  </div>
+
+  <div id="nav-admin-links">
+    <a href="admin/dashboard.html" class="gc-navbar__link" style="color:var(--gc-amber);">
+      ⚙️ Admin
+    </a>
+  </div>
+
+  <div class="gc-navbar__spacer"></div>
+
+  <div class="gc-navbar__right">
+    <span class="gc-navbar__user">Hola, <span id="nav-user-name">...</span></span>
+    <a href="carrito.html" class="gc-btn-carrito">
+      🛒 Carrito
+      <span id="carrito-badge">0</span>
+    </a>
+    <button class="gc-btn-logout-nav" id="btn-logout">Salir</button>
+  </div>
+</nav>
+
+<!-- ══ PERFIL ════════════════════════════════════════════════ -->
+<div class="gc-perfil-wrap">
+
+  <!-- Avatar card -->
+  <div class="perfil-avatar-card">
+    <div class="perfil-avatar">👤</div>
+    <div class="perfil-avatar-info">
+      <div class="perfil-nombre-display" id="perfil-nombre-display">
+        <div class="perfil-skeleton" style="width:140px;height:22px;"></div>
+      </div>
+      <div class="perfil-correo-display" id="perfil-correo-display">
+        <div class="perfil-skeleton" style="width:180px;height:14px;margin-top:6px;"></div>
+      </div>
+      <span class="perfil-rol-badge" id="perfil-rol-display">—</span>
+    </div>
+  </div>
+
+  <!-- ── Sección: Datos personales ── -->
+  <div class="perfil-section">
+    <div class="perfil-section__header">
+      <span class="perfil-section__icon">✏️</span>
+      <h2 class="perfil-section__title">Datos personales</h2>
+    </div>
+
+    <form id="form-perfil" autocomplete="off">
+      <div class="perfil-section__body">
+
+        <div class="gc-perfil-group">
+          <label for="perfil-nombre">Nombre</label>
+          <input
+            type="text"
+            id="perfil-nombre"
+            name="nombre"
+            placeholder="Tu nombre"
+            autocomplete="name"
+            required
+          />
+        </div>
+
+        <div class="gc-perfil-group">
+          <label for="perfil-correo">Correo electrónico</label>
+          <input
+            type="email"
+            id="perfil-correo"
+            name="correo"
+            placeholder="tu@correo.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div id="perfil-msg-datos" class="perfil-msg"></div>
+
+      </div>
+
+      <div class="perfil-section__footer">
+        <button type="submit" class="btn-perfil-save" id="btn-guardar-datos">
+          💾 Guardar cambios
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ── Sección: Cambiar contraseña ── -->
+  <div class="perfil-section">
+    <div class="perfil-section__header">
+      <span class="perfil-section__icon">🔒</span>
+      <h2 class="perfil-section__title">Cambiar contraseña</h2>
+    </div>
+
+    <form id="form-contrasena" autocomplete="off">
+      <div class="perfil-section__body">
+
+        <div class="gc-perfil-group">
+          <label for="pass-actual">Contraseña actual</label>
+          <div class="input-pass-wrap">
+            <input
+              type="password"
+              id="pass-actual"
+              name="contrasenaActual"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              required
+            />
+            <button type="button" class="toggle-pass" data-target="pass-actual">👁</button>
+          </div>
+        </div>
+
+        <div class="gc-form-row">
+          <div class="gc-perfil-group">
+            <label for="pass-nueva">Nueva contraseña</label>
+            <div class="input-pass-wrap">
+              <input
+                type="password"
+                id="pass-nueva"
+                name="contrasenaNueva"
+                placeholder="••••••••"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              />
+              <button type="button" class="toggle-pass" data-target="pass-nueva">👁</button>
+            </div>
+          </div>
+          <div class="gc-perfil-group">
+            <label for="pass-confirmar">Confirmar nueva</label>
+            <div class="input-pass-wrap">
+              <input
+                type="password"
+                id="pass-confirmar"
+                placeholder="••••••••"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              />
+              <button type="button" class="toggle-pass" data-target="pass-confirmar">👁</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="perfil-msg-pass" class="perfil-msg"></div>
+
+      </div>
+
+      <div class="perfil-section__footer">
+        <button type="submit" class="btn-perfil-save" id="btn-guardar-pass">
+          🔑 Cambiar contraseña
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<div id="gc-toast-container"></div>
+
+<script type="module">
+  import { requireAuth }     from "../assets/js/core/routes.js";
+  import { initNavbar }      from "../assets/js/pages/auth.page.js";
+  import { usuarioService }  from "../assets/js/services/usuario.service.js";
+  import { mostrarToast }    from "../assets/js/core/utils.js";
+  import { user }            from "../assets/js/core/storage.js";
+
+  requireAuth();
+  initNavbar();
+
+  // ── Cargar datos del perfil ───────────────────────────────
+  async function cargarPerfil() {
+    try {
+      const perfil = await usuarioService.verPerfil();
+
+      // Avatar card
+      document.getElementById("perfil-nombre-display").textContent = perfil.nombre;
+      document.getElementById("perfil-correo-display").textContent = perfil.correo;
+      document.getElementById("perfil-rol-display").textContent    = perfil.rol ?? "Cliente";
+
+      // Formulario
+      document.getElementById("perfil-nombre").value = perfil.nombre;
+      document.getElementById("perfil-correo").value = perfil.correo;
+
+    } catch (err) {
+      mostrarToast("No se pudo cargar el perfil.", "error");
+      console.error(err);
+    }
+  }
+
+  // ── Guardar datos personales ──────────────────────────────
+  document.getElementById("form-perfil").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn   = document.getElementById("btn-guardar-datos");
+    const msg   = document.getElementById("perfil-msg-datos");
+    const nombre = document.getElementById("perfil-nombre").value.trim();
+    const correo = document.getElementById("perfil-correo").value.trim();
+
+    if (!nombre || !correo) {
+      mostrarMsg(msg, "Completa todos los campos.", "error");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Guardando...";
+    ocultarMsg(msg);
+
+    try {
+      await usuarioService.actualizarPerfil(nombre, correo);
+
+      // Actualizar localStorage y avatar card
+      const u = user.get();
+      if (u) { u.nombre = nombre; user.set(u); }
+      document.getElementById("perfil-nombre-display").textContent = nombre;
+      document.getElementById("perfil-correo-display").textContent = correo;
+      document.getElementById("nav-user-name").textContent = nombre;
+
+      mostrarMsg(msg, "✅ Datos actualizados correctamente.", "success");
+      mostrarToast("Perfil actualizado.", "success");
+    } catch (err) {
+      mostrarMsg(msg, err.message || "No se pudo actualizar el perfil.", "error");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "💾 Guardar cambios";
+    }
+  });
+
+  // ── Cambiar contraseña ────────────────────────────────────
+  document.getElementById("form-contrasena").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn     = document.getElementById("btn-guardar-pass");
+    const msg     = document.getElementById("perfil-msg-pass");
+    const actual  = document.getElementById("pass-actual").value;
+    const nueva   = document.getElementById("pass-nueva").value;
+    const confirmar = document.getElementById("pass-confirmar").value;
+
+    ocultarMsg(msg);
+
+    if (nueva.length < 6) {
+      mostrarMsg(msg, "La nueva contraseña debe tener al menos 6 caracteres.", "error");
+      return;
+    }
+
+    if (nueva !== confirmar) {
+      mostrarMsg(msg, "Las contraseñas nuevas no coinciden.", "error");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Guardando...";
+
+    try {
+      await usuarioService.cambiarContrasena(actual, nueva);
+      mostrarMsg(msg, "✅ Contraseña cambiada correctamente.", "success");
+      mostrarToast("Contraseña actualizada.", "success");
+      document.getElementById("form-contrasena").reset();
+    } catch (err) {
+      mostrarMsg(msg, err.message || "No se pudo cambiar la contraseña.", "error");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "🔑 Cambiar contraseña";
+    }
+  });
+
+  // ── Toggle mostrar/ocultar contraseña ─────────────────────
+  document.querySelectorAll(".toggle-pass").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const input = document.getElementById(btn.dataset.target);
+      if (!input) return;
+      input.type      = input.type === "password" ? "text" : "password";
+      btn.textContent = input.type === "password" ? "👁" : "🙈";
+    });
+  });
+
+  // ── Helpers ───────────────────────────────────────────────
+  function mostrarMsg(el, texto, tipo) {
+    el.textContent = texto;
+    el.className   = `perfil-msg ${tipo}`;
+    el.style.display = "block";
+  }
+
+  function ocultarMsg(el) {
+    el.style.display = "none";
+    el.textContent   = "";
+  }
+
+  // Iniciar
+  cargarPerfil();
+</script>
+
+</body>
+</html>

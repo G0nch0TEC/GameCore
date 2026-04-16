@@ -131,6 +131,27 @@ public class CompraService {
         return new CompraResponse(compra, detalles);
     }
 
+    // Pagar compra propia — solo si está PENDIENTE
+    @Transactional
+    public CompraResponse pagarCompra(Integer idUsuario, Integer idCompra) {
+        Compra compra = compraRepository.findById(idCompra)
+                .orElseThrow(() -> new RuntimeException("Compra no encontrada: " + idCompra));
+
+        if (!compra.getUsuario().getIdUsuario().equals(idUsuario)) {
+            throw new RuntimeException("La compra no pertenece al usuario autenticado");
+        }
+
+        if (compra.getEstado() != Compra.Estado.PENDIENTE) {
+            throw new RuntimeException("Solo se pueden pagar compras en estado PENDIENTE");
+        }
+
+        compra.setEstado(Compra.Estado.PAGADO);
+        compraRepository.save(compra);
+
+        List<DetalleCompra> detalles = detalleCompraRepository.findByIdCompra(idCompra);
+        return new CompraResponse(compra, detalles);
+    }
+
     // Cancelar compra propia — solo si está PENDIENTE
     @Transactional
     public CompraResponse cancelarCompra(Integer idUsuario, Integer idCompra) {

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameCore — Tienda</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+
+<!-- ══ NAVBAR ════════════════════════════════════════════════ -->
+<nav class="gc-navbar">
+  <a href="productos.html" class="gc-navbar__brand">
+    <div class="gc-navbar__logo">🎮</div>
+    <span class="gc-navbar__name">GameCore</span>
+  </a>
+
+  <div class="gc-navbar__links">
+    <a href="productos.html" class="gc-navbar__link active">Tienda</a>
+    <a href="carrito.html"   class="gc-navbar__link">Carrito</a>
+    <a href="compras.html"   class="gc-navbar__link">Mis compras</a>
+    <a href="perfil.html"    class="gc-navbar__link">Perfil</a>
+  </div>
+
+  <div id="nav-admin-links">
+    <a href="admin/dashboard.html" class="gc-navbar__link" style="color:var(--gc-amber);">
+      ⚙️ Admin
+    </a>
+  </div>
+
+  <div class="gc-navbar__spacer"></div>
+
+  <div class="gc-navbar__right">
+    <span class="gc-navbar__user">Hola, <span id="nav-user-name">...</span></span>
+    <a href="carrito.html" class="gc-btn-carrito">
+      🛒 Carrito
+      <span id="carrito-badge">0</span>
+    </a>
+    <button class="gc-btn-logout-nav" id="btn-logout">Salir</button>
+  </div>
+</nav>
+
+<!-- ══ TIENDA ════════════════════════════════════════════════ -->
+<div class="gc-shop">
+
+  <aside class="gc-shop__sidebar">
+    <p class="gc-shop__sidebar-title">Categorías</p>
+    <ul id="lista-categorias">
+      <li>
+        <button class="btn-categoria activa" data-id="">🎮 Todas</button>
+      </li>
+    </ul>
+  </aside>
+
+  <section class="gc-shop__main">
+
+    <div class="gc-shop__toolbar">
+      <div class="gc-search-wrap">
+        <span class="gc-search-wrap__icon">🔍</span>
+        <input type="text" id="input-busqueda" placeholder="Buscar juego, consola..." autocomplete="off" />
+        <button id="btn-limpiar-busqueda" title="Limpiar">✕</button>
+      </div>
+      <select id="select-orden">
+        <option value="default">Ordenar por...</option>
+        <option value="precio-asc">Precio: menor a mayor</option>
+        <option value="precio-desc">Precio: mayor a menor</option>
+        <option value="nombre-asc">Nombre A–Z</option>
+      </select>
+      <span id="contador-resultados"></span>
+    </div>
+
+    <div id="skeleton-productos">
+      <div class="gc-skeleton-card"><div class="gc-skeleton-img"></div><div class="gc-skeleton-body"><div class="gc-skeleton-line" style="width:70%"></div><div class="gc-skeleton-line" style="width:50%"></div><div class="gc-skeleton-line" style="width:40%"></div></div></div>
+      <div class="gc-skeleton-card"><div class="gc-skeleton-img"></div><div class="gc-skeleton-body"><div class="gc-skeleton-line" style="width:80%"></div><div class="gc-skeleton-line" style="width:55%"></div><div class="gc-skeleton-line" style="width:35%"></div></div></div>
+      <div class="gc-skeleton-card"><div class="gc-skeleton-img"></div><div class="gc-skeleton-body"><div class="gc-skeleton-line" style="width:60%"></div><div class="gc-skeleton-line" style="width:45%"></div><div class="gc-skeleton-line" style="width:50%"></div></div></div>
+      <div class="gc-skeleton-card"><div class="gc-skeleton-img"></div><div class="gc-skeleton-body"><div class="gc-skeleton-line" style="width:75%"></div><div class="gc-skeleton-line" style="width:60%"></div><div class="gc-skeleton-line" style="width:30%"></div></div></div>
+    </div>
+
+    <div id="grid-productos"></div>
+
+  </section>
+
+</div>
+
+<div id="gc-toast-container"></div>
+
+<script type="module">
+  import { initProductos } from "../assets/js/pages/productos.page.js";
+  initProductos();
+</script>
+
+</body>
+</html>

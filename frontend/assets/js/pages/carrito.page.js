@@ -1,31 +1,10 @@
-// ============================================================
-//  carrito.js — GameCore · Carrito de compras
-//  Depende de: api.js, auth.js
-// ============================================================
+import { mostrarToast, formatearPrecio, actualizarBadgeCarrito } from "../core/utils.js";
+import { requireAuth } from "../core/routes.js";
+import { initNavbar } from "./auth.page.js";
+import { carritoService } from "../services/carrito.service.js";
+import { compraService }  from "../services/compras.service.js";
+let carritoData = null;
 
-import {
-  carrito as carritoAPI,
-  compras as comprasAPI,
-  formatearPrecio,
-  mostrarToast,
-  actualizarBadgeCarrito,
-} from "./api.js";
-import { requireAuth, initNavbar } from "./auth.js";
-
-// ─── ESTADO LOCAL ─────────────────────────────────────────────────────────────
-
-let carritoData = null; // última respuesta del backend
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-
-/**
- * Punto de entrada.
- * Usar en carrito.html:
- *   <script type="module">
- *     import { initCarrito } from "../assets/js/carrito.js";
- *     initCarrito();
- *   </script>
- */
 export async function initCarrito() {
   requireAuth();
   initNavbar();
@@ -45,7 +24,7 @@ async function cargarCarrito() {
   mostrarSkeleton(skeleton, true);
 
   try {
-    carritoData = await carritoAPI.ver();
+    carritoData = await carritoService.ver();
     renderizarCarrito();
     actualizarBadgeCarrito(carritoData.detalles?.length ?? 0);
   } catch (err) {
@@ -199,7 +178,7 @@ async function cambiarCantidad(idDetalle, nuevaCantidad) {
   bloquearItem(idDetalle, true);
 
   try {
-    carritoData = await carritoAPI.actualizarCantidad(idDetalle, nuevaCantidad);
+    carritoData = await carritoService.actualizarCantidad(idDetalle, nuevaCantidad);
     renderizarCarrito();
     actualizarBadgeCarrito(carritoData.detalles?.length ?? 0);
   } catch (err) {
@@ -226,7 +205,7 @@ async function eliminarItem(idDetalle) {
   }
 
   try {
-    carritoData = await carritoAPI.eliminarItem(idDetalle);
+    carritoData = await carritoService.eliminarItem(idDetalle);
     renderizarCarrito();
     actualizarBadgeCarrito(carritoData.detalles?.length ?? 0);
     mostrarToast("Producto eliminado del carrito.", "info");
@@ -255,7 +234,7 @@ function initBotonVaciar() {
 
     btn.disabled = true;
     try {
-      await carritoAPI.vaciar();
+      await carritoService.vaciar();
       carritoData = { detalles: [] };
       renderizarCarrito();
       actualizarBadgeCarrito(0);
@@ -294,7 +273,7 @@ function initBotonConfirmar() {
     btn.textContent = "Procesando...";
 
     try {
-      const compra = await comprasAPI.realizar();
+      const compra = await compraService.realizar();
       carritoData = { detalles: [] };
       actualizarBadgeCarrito(0);
       mostrarToast("¡Compra realizada con éxito! 🎉", "success");

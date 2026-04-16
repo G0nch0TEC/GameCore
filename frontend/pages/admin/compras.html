@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameCore — Compras</title>
+  <link rel="stylesheet" href="../../assets/css/admin.css" />
+  <style>
+    /* Select inline de estado */
+    .select-estado-compra {
+      background: var(--gc-surface2);
+      border: 1px solid var(--gc-border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      color: var(--gc-text);
+      font-size: 12.5px;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      transition: border-color var(--gc-transition);
+    }
+    .select-estado-compra:focus    { border-color: var(--gc-amber); }
+    .select-estado-compra:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Fila detalle expandible */
+    .fila-detalle-admin td {
+      padding: 0 !important;
+      background: var(--gc-bg);
+    }
+
+    .detalle-compra-admin {
+      padding: 16px 24px;
+      border-left: 3px solid var(--gc-amber);
+      margin: 8px 16px;
+      border-radius: 0 8px 8px 0;
+      background: var(--gc-surface2);
+    }
+
+    .cargando-detalle { color: var(--gc-text-muted); font-size: 13px; }
+
+    /* Tabla interna de detalle */
+    .tabla-admin-detalle {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .tabla-admin-detalle th {
+      padding: 8px 12px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+      color: var(--gc-amber);
+      border-bottom: 1px solid var(--gc-border);
+    }
+
+    .tabla-admin-detalle td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--gc-border);
+      color: var(--gc-text);
+    }
+
+    .tabla-admin-detalle tfoot td {
+      border-bottom: none;
+      border-top: 1px solid var(--gc-border);
+      padding-top: 10px;
+    }
+
+    .total-label {
+      text-align: right;
+      font-weight: 700;
+      color: var(--gc-text-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .total-valor {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gc-amber);
+    }
+
+    /* Indicador de estado por fila */
+    .fila-estado-pagado    td:first-child { border-left: 3px solid #34D399; }
+    .fila-estado-pendiente td:first-child { border-left: 3px solid var(--gc-amber); }
+    .fila-estado-cancelado td:first-child { border-left: 3px solid #E05252; }
+  </style>
+</head>
+<body>
+
+<div class="gc-layout">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
+  <aside class="gc-sidebar" id="gc-sidebar">
+
+    <div class="gc-sidebar__brand">
+      <div class="gc-sidebar__logo">🎮</div>
+      <span class="gc-sidebar__brand-name">GameCore</span>
+    </div>
+
+    <nav class="gc-sidebar__nav">
+
+      <span class="gc-nav-label">Principal</span>
+
+      <a href="dashboard.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🏠</span>
+        Dashboard
+      </a>
+
+      <span class="gc-nav-label">Catálogo</span>
+
+      <a href="producto.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🎮</span>
+        Productos
+      </a>
+
+      <a href="categorias.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🗂️</span>
+        Categorías
+      </a>
+
+      <span class="gc-nav-label">Ventas</span>
+
+      <a href="compras.html" class="gc-nav-link active">
+        <span class="gc-nav-link__icon">🧾</span>
+        Compras
+      </a>
+
+      <span class="gc-nav-label">Usuarios</span>
+
+      <a href="usuarios.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">👥</span>
+        Usuarios
+      </a>
+
+      <span class="gc-nav-label">Tienda</span>
+
+      <a href="../productos.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🛍️</span>
+        Ver tienda
+      </a>
+
+    </nav>
+
+    <div class="gc-sidebar__footer">
+      <button class="gc-btn-logout" id="btn-logout">
+        <span>🚪</span> Cerrar sesión
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ══ MAIN ═════════════════════════════════════════════════ -->
+  <main class="gc-main">
+
+    <header class="gc-topbar">
+      <div class="gc-topbar__breadcrumb">
+        <span>Admin</span>
+        <span class="sep">›</span>
+        <span>Ventas</span>
+        <span class="sep">›</span>
+        <span class="active">Compras</span>
+      </div>
+      <div class="gc-topbar__actions">
+        <span class="gc-topbar__admin-tag" id="topbar-admin-name">Admin</span>
+      </div>
+    </header>
+
+    <section class="gc-content">
+
+      <div class="gc-page-header">
+        <div>
+          <h1 class="gc-page-title">Compras</h1>
+          <p class="gc-page-subtitle">Historial y gestión de pedidos</p>
+        </div>
+      </div>
+
+      <div class="gc-card">
+        <div class="gc-card__header">
+
+          <!-- Filtros de estado — .btn-filtro-estado-admin buscado por compras.js -->
+          <div class="gc-filter-group">
+            <button class="btn-filtro-estado-admin activo" data-estado="todos">Todos</button>
+            <button class="btn-filtro-estado-admin" data-estado="pendiente">⏳ Pendiente</button>
+            <button class="btn-filtro-estado-admin" data-estado="pagado">✅ Pagado</button>
+            <button class="btn-filtro-estado-admin" data-estado="cancelado">❌ Cancelado</button>
+          </div>
+
+          <div class="gc-search-box">
+            <span class="gc-search-box__icon">🔍</span>
+            <input type="text" class="gc-input-search"
+                   id="input-busqueda-compra" placeholder="Buscar compra..." />
+          </div>
+
+        </div>
+
+        <div class="gc-table-wrap">
+          <table class="gc-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Usuario</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Total</th>
+                <th>Detalle</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-compras-body">
+              <tr>
+                <td colspan="6" style="text-align:center;color:var(--gc-text-muted);padding:36px;">
+                  Cargando compras...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<div id="gc-toast-container"></div>
+
+<script type="module">
+  import { initAdminCompras } from "../../assets/js/admin/compras.js";
+  initAdminCompras();
+</script>
+
+</body>
+</html>

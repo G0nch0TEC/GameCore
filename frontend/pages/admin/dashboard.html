@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameCore — Dashboard</title>
+  <link rel="stylesheet" href="../../assets/css/admin.css" />
+</head>
+<body>
+
+<div class="gc-layout">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
+  <aside class="gc-sidebar" id="gc-sidebar">
+
+    <div class="gc-sidebar__brand">
+      <div class="gc-sidebar__logo">🎮</div>
+      <span class="gc-sidebar__brand-name">GameCore</span>
+    </div>
+
+    <nav class="gc-sidebar__nav">
+
+      <span class="gc-nav-label">Principal</span>
+
+      <a href="dashboard.html" class="gc-nav-link active">
+        <span class="gc-nav-link__icon">🏠</span>
+        Dashboard
+      </a>
+
+      <span class="gc-nav-label">Catálogo</span>
+
+      <a href="producto.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🎮</span>
+        Productos
+      </a>
+
+      <a href="categorias.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🗂️</span>
+        Categorías
+      </a>
+
+      <span class="gc-nav-label">Ventas</span>
+
+      <a href="compras.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🧾</span>
+        Compras
+      </a>
+
+      <span class="gc-nav-label">Usuarios</span>
+
+      <a href="usuarios.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">👥</span>
+        Usuarios
+      </a>
+
+      <span class="gc-nav-label">Tienda</span>
+
+      <a href="../productos.html" class="gc-nav-link">
+        <span class="gc-nav-link__icon">🛍️</span>
+        Ver tienda
+      </a>
+
+    </nav>
+
+    <div class="gc-sidebar__footer">
+      <!--
+        btn-logout es buscado por initNavbar() de auth.page.js
+        NO agregar un segundo addEventListener aquí en el script
+      -->
+      <button class="gc-btn-logout" id="btn-logout">
+        <span>🚪</span> Cerrar sesión
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ══ MAIN ═════════════════════════════════════════════════ -->
+  <main class="gc-main">
+
+    <!-- Top bar -->
+    <header class="gc-topbar">
+      <div class="gc-topbar__breadcrumb">
+        <span>Admin</span>
+        <span class="sep">›</span>
+        <span class="active">Dashboard</span>
+      </div>
+      <div class="gc-topbar__actions">
+        <!--
+          initNavbar() usa nav-user-name, que está en el sidebar navbar público.
+          En el admin mostramos el nombre aquí manualmente desde storage.
+        -->
+        <span class="gc-topbar__admin-tag" id="topbar-admin-name">Admin</span>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <section class="gc-content">
+
+      <div class="gc-page-header">
+        <div>
+          <h1 class="gc-page-title">Dashboard</h1>
+          <p class="gc-page-subtitle">Resumen general de GameCore</p>
+        </div>
+      </div>
+
+      <!-- Métricas Productos -->
+      <p class="gc-nav-label" style="margin-bottom:10px;">Productos</p>
+      <div class="gc-metrics-grid">
+        <div class="gc-metric-card">
+          <div class="gc-metric-card__icon">📦</div>
+          <div class="gc-metric-card__value" id="metrica-total-productos">—</div>
+          <div class="gc-metric-card__label">Total productos</div>
+        </div>
+        <div class="gc-metric-card">
+          <div class="gc-metric-card__icon">✅</div>
+          <div class="gc-metric-card__value" id="metrica-productos-activos">—</div>
+          <div class="gc-metric-card__label">Activos</div>
+        </div>
+        <div class="gc-metric-card">
+          <div class="gc-metric-card__icon">⚠️</div>
+          <div class="gc-metric-card__value" id="metrica-productos-agotados">—</div>
+          <div class="gc-metric-card__label">Sin stock</div>
+        </div>
+      </div>
+
+      <!-- Métricas Usuarios -->
+      <p class="gc-nav-label" style="margin-bottom:10px;">Usuarios</p>
+      <div class="gc-metrics-grid">
+        <div class="gc-metric-card">
+          <div class="gc-metric-card__icon">👤</div>
+          <div class="gc-metric-card__value" id="metrica-total-usuarios">—</div>
+          <div class="gc-metric-card__label">Total usuarios</div>
+        </div>
+        <div class="gc-metric-card">
+          <div class="gc-metric-card__icon">🛒</div>
+          <div class="gc-metric-card__value" id="metrica-clientes">—</div>
+          <div class="gc-metric-card__label">Clientes</div>
+        </div>
+      </div>
+
+      <!-- Métricas Ventas -->
+      <p class="gc-nav-label" style="margin-bottom:10px;">Ventas</p>
+      <div class="gc-metrics-grid">
+        <div class="gc-metric-card">
+          <div class="gc-metric-card__icon">🧾</div>
+          <div class="gc-metric-card__value" id="metrica-total-compras">—</div>
+          <div class="gc-metric-card__label">Total compras</div>
+        </div>
+        <div class="gc-metric-card">
+          <div class="gc-metric-card__icon">💰</div>
+          <div class="gc-metric-card__value" id="metrica-ventas-totales">—</div>
+          <div class="gc-metric-card__label">Ventas totales</div>
+        </div>
+        <div class="gc-metric-card">
+          <div class="gc-metric-card__icon">⏳</div>
+          <div class="gc-metric-card__value" id="metrica-pendientes">—</div>
+          <div class="gc-metric-card__label">Pendientes</div>
+        </div>
+      </div>
+
+      <!-- Compras recientes -->
+      <div class="gc-card">
+        <div class="gc-card__header">
+          <h2 class="gc-card__title">Compras recientes</h2>
+          <a href="compras.html" class="gc-btn gc-btn--outline" style="font-size:12px;padding:6px 14px;">
+            Ver todas
+          </a>
+        </div>
+        <div class="gc-table-wrap">
+          <table class="gc-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Usuario</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-compras-recientes">
+              <tr>
+                <td colspan="5" style="text-align:center;color:var(--gc-text-muted);padding:32px;">
+                  Cargando...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<div id="gc-toast-container"></div>
+
+<script type="module">
+  import { initDashboard } from "../../assets/js/admin/dashboard.js";
+  initDashboard();
+</script>
+
+</body>
+</html>
