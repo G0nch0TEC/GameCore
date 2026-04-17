@@ -439,11 +439,17 @@
     ocultarMsg(msg);
 
     try {
-      await usuarioService.actualizarPerfil(nombre, correo);
+      const respuesta = await usuarioService.actualizarPerfil(nombre, correo);
+
+      // Guardar el nuevo token JWT (tiene el correo actualizado como subject)
+      if (respuesta?.token) {
+        const { token: tokenStore } = await import("../assets/js/core/storage.js");
+        tokenStore.set(respuesta.token);
+      }
 
       // Actualizar localStorage y avatar card
       const u = user.get();
-      if (u) { u.nombre = nombre; user.set(u); }
+      if (u) { u.nombre = nombre; u.correo = correo; user.set(u); }
       document.getElementById("perfil-nombre-display").textContent = nombre;
       document.getElementById("perfil-correo-display").textContent = correo;
       document.getElementById("nav-user-name").textContent = nombre;
@@ -488,7 +494,7 @@
       mostrarToast("Contraseña actualizada.", "success");
       document.getElementById("form-contrasena").reset();
     } catch (err) {
-      mostrarMsg(msg, "Necesita iniciar sesion nuevamente", "error");
+      mostrarMsg(msg, err.message || "No se pudo cambiar la contraseña.", "error");
     } finally {
       btn.disabled = false;
       btn.textContent = "🔑 Cambiar contraseña";

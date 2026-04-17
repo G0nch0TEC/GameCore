@@ -1,5 +1,7 @@
 package com.senati.GameCore.controller;
 
+import com.senati.GameCore.config.JwtUtil;
+import com.senati.GameCore.dto.AuthResponse;
 import com.senati.GameCore.dto.UsuarioResponse;
 import com.senati.GameCore.model.Usuario;
 import com.senati.GameCore.service.UsuarioService;
@@ -15,9 +17,11 @@ import java.util.Map;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final JwtUtil jwtUtil;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, JwtUtil jwtUtil) {
         this.usuarioService = usuarioService;
+        this.jwtUtil = jwtUtil;
     }
 
     // RUTAS PARA CUALQUIER USUARIO AUTENTICADO
@@ -29,11 +33,14 @@ public class UsuarioController {
     }
 
     //Actualizar nombre y/o correo (PATCH /usuarios/perfil)
+    // Devuelve un nuevo token JWT para que el frontend lo actualice sin re-loguearse
     @PatchMapping("/perfil")
-    public ResponseEntity<UsuarioResponse> actualizarPerfil(@RequestBody Map<String, String> body) {
+    public ResponseEntity<AuthResponse> actualizarPerfil(@RequestBody Map<String, String> body) {
         String nuevoNombre = body.get("nombre");
         String nuevoCorreo = body.get("correo");
-        return  ResponseEntity.ok(usuarioService.actualizarPerfilPropio(nuevoNombre, nuevoCorreo));
+        UsuarioResponse actualizado = usuarioService.actualizarPerfilPropio(nuevoNombre, nuevoCorreo);
+        String nuevoToken = jwtUtil.generateToken(actualizado.getCorreo(), actualizado.getRol().name());
+        return ResponseEntity.ok(new AuthResponse(nuevoToken));
     }
 
     //Cambiar contraseña propia (PATCH /usuarios/contrasena)
