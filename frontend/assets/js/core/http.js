@@ -1,6 +1,6 @@
 import { token } from "./storage.js";
 
-const API_BASE = "http://localhost:8080";
+export const API_BASE = "http://localhost:8080";
 
 export async function request(endpoint, options = {}, auth = true){
     const headers = {
@@ -19,8 +19,16 @@ export async function request(endpoint, options = {}, auth = true){
     //Sesion expirada o token inválido -> limpiar y redirigir
     if (res.status === 401){
         token.remove();
-        localStorage.removeItem("gc_user");   
-        window.location.href = "/index.html";
+        localStorage.removeItem("gc_user");
+        // Solo redirigir si no estamos ya en el login/register
+        // (evita loop infinito cuando el backend devuelve 401 estando en index.html)
+        const authPages = ["/index.html", "/", "/frontend/pages/register.html"];
+        const onAuthPage = authPages.some(p =>
+            window.location.pathname === p || window.location.pathname.endsWith(p)
+        );
+        if (!onAuthPage) {
+            window.location.href = "/index.html";
+        }
         throw new Error("Sesión expirada. Por favor, inicia sesion nuevamente.");
     }
 

@@ -3,6 +3,7 @@ import { requireAuth } from "../core/routes.js";
 import { initNavbar } from "./auth.page.js";
 import { carritoService } from "../services/carrito.service.js";
 import { compraService }  from "../services/compras.service.js";
+import { getProductImage } from "../core/utils.js";
 let carritoData = null;
 
 export async function initCarrito() {
@@ -101,7 +102,7 @@ function renderizarCarrito() {
 
 /** Genera el HTML de un ítem del carrito */
 function crearItemHTML(item) {
-  const imagenUrl = item.imgUrl || "/frontend/assets/image/Shrek.jpg";
+  const imagenUrl = getProductImage(item.imgUrl);
   const subtotal  = item.subtotal ?? item.cantidad * item.precio;
 
   return `

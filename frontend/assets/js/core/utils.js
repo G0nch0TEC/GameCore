@@ -82,3 +82,27 @@ export function actualizarBadgeCarrito(cantidad) {
   }
   localStorage.setItem("gc_carrito_count", cantidad);
 }
+
+import { API_BASE } from "./http.js";
+
+/**
+ * Devuelve la URL correcta de una imagen de producto
+ * soporta:
+ * - rutas relativas (/uploads/x.jpg)
+ * - URLs completas (http/https)
+ * - base64 (data:)
+ * - null/undefined (fallback)
+ */
+export function getProductImage(imgUrl) {
+  const fallback = "/frontend/assets/image/Shrek.jpg";
+
+  if (!imgUrl) return fallback;
+
+  // ya es URL completa o base64
+  if (imgUrl.startsWith("http") || imgUrl.startsWith("data:")) {
+    return imgUrl;
+  }
+
+  // ruta relativa del backend
+  return API_BASE + imgUrl;
+}

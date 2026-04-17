@@ -1,8 +1,9 @@
-import {categoriaService} from "../services/categoria.service.js";
+import { categoriaService } from "../services/categoria.service.js";
 import { productoService } from "../services/producto.service.js";
 import { formatearPrecio, mostrarToast } from "../core/utils.js";
 import { requireAdmin }    from "../core/routes.js";
 import { initNavbar }      from "../pages/auth.page.js";
+import { API_BASE }        from "../core/http.js";
 import { buscarEnTabla, mostrarSkeleton, setLoading, poblarSelectCategorias, initBusquedaAdmin, getField, setField } from "./admin.utils.js";
 /**
  * Punto de entrada para pages/admin/producto.html
@@ -35,21 +36,22 @@ async function cargarTablaProductos() {
     tbody.innerHTML = lista.map((p) => `
       <tr id="fila-producto-${p.idProducto}">
         <td>${p.idProducto}</td>
-        <td>
-          <img src="${p.imgUrl || "/frontend/assets/image/Shrek.jpg"}"
-               alt="${p.nombreProducto}" class="thumb-tabla"
-               onerror="this.src='/frontend/assets/image/Shrek.jpg'">
-          ${p.nombreProducto}
-        </td>
-        <td>${catMap[p.idCategoria] ?? "—"}</td>
-        <td>${formatearPrecio(p.precio)}</td>
-        <td>${p.stock}</td>
-        <td><span class="badge-estado badge-${p.estado}">${p.estado}</span></td>
-        <td class="acciones-celda">
-          <button class="btn-tabla btn-editar" data-id="${p.idProducto}" title="Editar">✏️</button>
-          <button class="btn-tabla btn-eliminar" data-id="${p.idProducto}" title="Eliminar">🗑</button>
-        </td>
-      </tr>
+      <td>
+          <img src="${p.imgUrl ? API_BASE + p.imgUrl : '/frontend/assets/image/Shrek.jpg'}"
+            alt="${p.nombreProducto}"
+            class="thumb-tabla"
+            onerror="this.src='/frontend/assets/image/Shrek.jpg'">
+        ${p.nombreProducto}
+      </td>
+      <td>${catMap[p.idCategoria] ?? "—"}</td>
+      <td>${formatearPrecio(p.precio)}</td>
+      <td>${p.stock}</td>
+      <td><span class="badge-estado badge-${p.estado}">${p.estado}</span></td>
+      <td class="acciones-celda">
+        <button class="btn-tabla btn-editar" data-id="${p.idProducto}" title="Editar">✏️</button>
+        <button class="btn-tabla btn-eliminar" data-id="${p.idProducto}" title="Eliminar">🗑</button>
+      </td>
+    </tr>
     `).join("");
 
     // Guardar categorías para el formulario
@@ -189,13 +191,29 @@ async function guardarProducto(e) {
   const urlManual = getField(form, "fp-img") || document.getElementById("fp-img")?.value?.trim();
   let imgUrl = null;
 
+  // Si el usuario selecciona una imagen,
+  // se envía al backend usando FormData para que se guarde en el servidor y devuelva una URL;
+  // si no, se usa la URL ingresada manualmente
   if (fileInput?.files?.[0]) {
-    // Archivo seleccionado → comprimir antes de enviar
-    imgUrl = await comprimirImagen(fileInput.files[0], 600, 0.75);
-  } else if (urlManual) {
-    // URL escrita a mano
-    imgUrl = urlManual;
-  }
+  const formData = new FormData();
+  formData.append("imagen", fileInput.files[0]);
+
+  const res = await fetch(`${API_BASE}/productos/admin/upload-imagen`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("gc_token")}`
+    },
+    body: formData,
+  });
+
+    if (!res.ok) throw new Error("Error al subir la imagen");
+
+    const data = await res.json();
+    imgUrl = data.imgUrl;
+
+    } else if (urlManual) {
+      imgUrl = urlManual;
+    }
 
   const payload = {
     nombre:         getField(form, "nombre_producto"),

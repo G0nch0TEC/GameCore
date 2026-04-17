@@ -3,6 +3,7 @@ package com.senati.GameCore.config;
 import com.senati.GameCore.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.*;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
@@ -27,28 +30,36 @@ public class SecurityConfig {
     private UserDetailsServiceImpl userDetailsService;
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // Constructor — inyectamos las dependencias
     public SecurityConfig(UserDetailsServiceImpl userDetailsService,
                           JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
+    // BEAN 0 — Sirve los archivos subidos como recursos estáticos
+    @Bean
+    public WebMvcConfigurer uploadResourceHandler() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                registry.addResourceHandler("/uploads/**")
+                        .addResourceLocations("file:uploads/");
+            }
+        };
+    }
+
     // BEAN 1 — Define qué rutas son públicas y cuáles necesitan token
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Desactivamos CSRF porque usamos JWT, no sesiones
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-                // Le decimos que no use sesiones — cada petición se autentica con su token
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // Definimos qué rutas son públicas y cuáles necesitan token
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/productos/admin/**").hasRole("ADMIN")
                         .requestMatchers("/compras/admin/**").hasRole("ADMIN")
                         .requestMatchers("/categorias/admin/**").hasRole("ADMIN")
@@ -56,10 +67,7 @@ public class SecurityConfig {
                         .requestMatchers("/compras/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                // Registramos nuestro proveedor de autenticación
                 .authenticationProvider(authenticationProvider())
-
-                // Agregamos nuestro filtro JWT antes del filtro de Spring Security
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class);
 

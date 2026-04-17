@@ -2,6 +2,7 @@ import { mostrarToast, formatearPrecio, actualizarBadgeCarrito, formatearFecha }
 import { requireAuth } from "../core/routes.js";
 import { initNavbar } from "./auth.page.js";
 import { compraService } from "../services/compras.service.js";
+import { getProductImage } from "../core/utils.js";
 
 export async function initCompras() {
   requireAuth();
@@ -149,7 +150,7 @@ function previsualizarProductos(detalles = []) {
 
   const imgs = primeras.map((d) => `
     <img
-      src="${d.imgUrl || "/frontend/assets/image/Shrek.jpg"}"
+      src="${getProductImage(d.imgUrl)}"
       alt="${d.nombreProducto}"
       class="preview-img"
       title="${d.nombreProducto}"
@@ -174,7 +175,7 @@ function renderizarDetalleProductos(detalles = []) {
     <tr>
       <td class="detalle-img-cell">
         <img
-          src="${d.imgUrl || "/frontend/assets/image/Shrek.jpg"}"
+          src="${getProductImage(d.imgUrl)}"
           alt="${d.nombreProducto}"
           class="detalle-thumb"
           onerror="this.src='/frontend/assets/image/Shrek.jpg'"

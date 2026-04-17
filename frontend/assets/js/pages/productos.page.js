@@ -4,6 +4,7 @@ import { initNavbar } from "./auth.page.js";
 import { productoService }  from "../services/producto.service.js";
 import { categoriaService } from "../services/categoria.service.js";
 import { carritoService }   from "../services/carrito.service.js";
+import { getProductImage } from "../core/utils.js";
 let todosLosProductos = [];
 let categoriaActiva   = null;
 
@@ -157,7 +158,7 @@ function renderizarProductos(lista) {
 
 /** Genera el HTML de una tarjeta de producto */
 function crearTarjetaProducto(p) {
-  const imagenUrl = p.imgUrl || "/frontend/assets/image/Shrek.jpg";
+  const imagenUrl = getProductImage(p.imgUrl);
   const agotado   = p.stock === 0;
 
   return `
@@ -269,7 +270,7 @@ async function abrirModalDetalle(idProducto) {
 
   try {
     const p = await productoService.buscarPorId(idProducto);
-    const imagenUrl = p.imgUrl || "/frontend/assets/image/Shrek.jpg";
+    const imagenUrl = getProductImage(p.imgUrl);
     const agotado   = p.stock === 0;
 
     content.innerHTML = `

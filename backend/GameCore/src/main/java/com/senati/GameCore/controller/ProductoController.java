@@ -3,18 +3,27 @@ package com.senati.GameCore.controller;
 import com.senati.GameCore.dto.ProductoRequest;
 import com.senati.GameCore.dto.ProductoResponse;
 import com.senati.GameCore.service.ProductoService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.*;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/productos")
 public class ProductoController {
 
     private final ProductoService productoService;
+
+    @Value("${app.upload.dir:uploads/productos}")
+    private String uploadDir;
 
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
@@ -75,6 +84,25 @@ public class ProductoController {
     }
 
     // ─── SOLO ADMIN ───────────────────────────────────────────────────────────
+
+    // POST /productos/admin/upload-imagen
+    @PostMapping("/admin/upload-imagen")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, String>> subirImagen(
+            @RequestParam("imagen") MultipartFile imagen) throws IOException {
+        String extension = imagen.getOriginalFilename() != null
+                ? imagen.getOriginalFilename().substring(imagen.getOriginalFilename().lastIndexOf('.'))
+                : ".jpg";
+        String nombreArchivo = UUID.randomUUID() + extension;
+
+        Path directorio = Paths.get(uploadDir);
+        Files.createDirectories(directorio);
+        Files.copy(imagen.getInputStream(), directorio.resolve(nombreArchivo),
+                StandardCopyOption.REPLACE_EXISTING);
+
+        String url = "/uploads/productos/" + nombreArchivo;
+        return ResponseEntity.ok(Map.of("imgUrl", url));
+    }
 
     // POST /productos/admin
     @PostMapping("/admin")

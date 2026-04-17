@@ -488,7 +488,7 @@
       mostrarToast("Contraseña actualizada.", "success");
       document.getElementById("form-contrasena").reset();
     } catch (err) {
-      mostrarMsg(msg, err.message || "No se pudo cambiar la contraseña.", "error");
+      mostrarMsg(msg, "Necesita iniciar sesion nuevamente", "error");
     } finally {
       btn.disabled = false;
       btn.textContent = "🔑 Cambiar contraseña";
